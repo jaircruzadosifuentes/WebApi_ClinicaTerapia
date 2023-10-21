@@ -29,5 +29,7 @@ namespace Entities
         public bool? IsStaff { get; set; }
         public string? TypeUser { get; set; }
         public Campus? Campus { get; set; }
+        public int EmployeedCashRegisterId { get; set; }
+        public int AreaId { get; set; }
     }
 }

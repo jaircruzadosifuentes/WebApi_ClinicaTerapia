@@ -27,6 +27,12 @@ namespace WebApi_ClinicaTerapia.Controllers
         {
             var payDuesDetails = _scheduleService.GetAllSchedulePatient(patientId);
             return Ok(payDuesDetails);
+        } 
+        [HttpGet("GetAllScheduleEmployeed/{employeedId}")]
+        public ActionResult<IEnumerable<EmployeedDisponibilty>> GetAllScheduleEmployeed(int employeedId)
+        {
+            var employeedDisponibilties = _scheduleService.GetAllScheduleEmployeed(employeedId);
+            return Ok(employeedDisponibilties);
         }
     }
 }

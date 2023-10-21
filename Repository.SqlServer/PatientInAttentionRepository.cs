@@ -7,9 +7,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Repository.SqlServer.PatientInAttentionRepository
+namespace Repository.SqlServer
 {
-    public class PatientInAttentionRepository: Repository, IPatientInAttentionRepository
+    public class PatientInAttentionRepository : Repository, IPatientInAttentionRepository
     {
         public PatientInAttentionRepository(SqlConnection context, SqlTransaction transaction)
         {

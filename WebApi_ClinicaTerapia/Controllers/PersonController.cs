@@ -41,6 +41,13 @@ namespace WebApi_ClinicaTerapia.Controllers
                 throw new Exception(string.Concat(Constantes.G_MESSAGE_ERROR_WITH_CODE, codeError.ToString()));
             }
            
+        } 
+        [HttpGet("GetPersonByNroDocument/{nroDocument}")]
+        public ActionResult<Person> GetPersonByNroDocument(string nroDocument)
+        {
+           
+            var person =  _personService.GetPersonByNroDocument(nroDocument);
+            return Ok(person);
         }
     }
 }

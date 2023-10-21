@@ -21,6 +21,6 @@ namespace Entities
         public string? PersonEmit { get; set; }
         public string? TypeTransaction { get; set; }
         public int TypeTransactionValue { get; set; }
-
+        public int VoucherDocumentId { get; set; }
     }
 }

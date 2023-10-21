@@ -26,5 +26,7 @@ namespace UnitOfWork.Interfaces
         IPaymentRepository PaymentRepository { get; }
         IMessageRepository MessageRepository { get; }
         IMovementsRepository MovementsRepository { get; }
+        IProductRepository ProductRepository { get; }
+        ISaleRepository SaleRepository { get; }
     }
 }

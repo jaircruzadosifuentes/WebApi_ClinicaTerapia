@@ -8,7 +8,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Repository.SqlServer.MessageRepository
+namespace Repository.SqlServer
 {
     public class MessageRepository : Repository, IMessageRepository
     {
@@ -75,8 +75,8 @@ namespace Repository.SqlServer.MessageRepository
                         messages.Add(new Message
                         {
                             MessageContent = reader["message_content"].ToString(),
-                            TypeUserFrom = (reader["type_user_from"].ToString()),
-                            TypeUserTo = (reader["type_user_to"].ToString()),
+                            TypeUserFrom = reader["type_user_from"].ToString(),
+                            TypeUserTo = reader["type_user_to"].ToString(),
                             CreatedAt = Convert.ToDateTime(reader["created_at"]),
                             Seen = Convert.ToBoolean(reader["seen"].ToString()),
                             IsStaff = Convert.ToBoolean(reader["is_staff"].ToString()),

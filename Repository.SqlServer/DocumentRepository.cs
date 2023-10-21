@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Repository.SqlServer.DocumentRepository
+namespace Repository.SqlServer
 {
     public class DocumentRepository : Repository, IDocumentRepository
     {

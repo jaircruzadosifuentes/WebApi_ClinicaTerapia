@@ -12,6 +12,7 @@ namespace Services
     {
         bool GenerateSchedule(PayDuesDetail payDuesDetail);
         IEnumerable<PayDuesDetail> GetAllSchedulePatient(int patientId);
+        IEnumerable<EmployeedDisponibilty> GetAllScheduleEmployeed(int employeedId);
     }
     public class ScheduleService : IScheduleService
     {
@@ -27,6 +28,13 @@ namespace Services
             bool generate = context.Repositories.ScheduleRepository.GenerateSchedule(payDuesDetail);
             context.SaveChanges();
             return generate;
+        }
+
+        public IEnumerable<EmployeedDisponibilty> GetAllScheduleEmployeed(int employeedId)
+        {
+            using var context = _unitOfWork.Create();
+            var schedules = context.Repositories.ScheduleRepository.GetAllScheduleEmployeed(employeedId);
+            return schedules;
         }
 
         public IEnumerable<PayDuesDetail> GetAllSchedulePatient(int patientId)

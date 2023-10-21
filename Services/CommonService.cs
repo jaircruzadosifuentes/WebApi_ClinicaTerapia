@@ -41,6 +41,9 @@ namespace Services
         IEnumerable<Config> GetAllConfigs();
         bool PutConfig(Config config);
         IEnumerable<Routes> GetRoutesSpecial(string userCode);
+        IEnumerable<SubCategory> GetSubCategoriesInSelect(int categoryId);
+        IEnumerable<Category> GetCategoriesInSelect();
+
     }
     public class CommonService : ICommonService
     {
@@ -73,6 +76,12 @@ namespace Services
         {
             using var context = _unitOfWork.Create();
             return context.Repositories.CommonRepository.GetAreasInSelect();
+        }
+
+        public IEnumerable<Category> GetCategoriesInSelect()
+        {
+            using var context = _unitOfWork.Create();
+            return context.Repositories.CommonRepository.GetCategoriesInSelect();
         }
 
         public IEnumerable<Dashboard> GetCountPatientsType()
@@ -207,6 +216,12 @@ namespace Services
         {
             using var context = _unitOfWork.Create();
             return context.Repositories.CommonRepository.GetRoutesSpecial(userCode);
+        }
+
+        public IEnumerable<SubCategory> GetSubCategoriesInSelect(int categoryId)
+        {
+            using var context = _unitOfWork.Create();
+            return context.Repositories.CommonRepository.GetSubCategoriesInSelect(categoryId);
         }
 
         public bool PostRegisterFrecuencyClinic(Frecuency frecuency)

@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Repository.SqlServer.CommonRepository
+namespace Repository.SqlServer
 {
     public class CommonRepository : Repository, ICommonRepository
     {
@@ -24,13 +24,14 @@ namespace Repository.SqlServer.CommonRepository
             {
                 var configs = new List<Config>();
                 var command = CreateCommand("PA_CONFIG_GENERAL_GET_CONFIG");
-                command.CommandType = System.Data.CommandType.StoredProcedure;
+                command.CommandType = CommandType.StoredProcedure;
                 using (var reader = command.ExecuteReader())
                 {
                     while (reader.Read())
                     {
                         configs.Add(new Config
-                        {   ConfigId = Convert.ToInt32(reader["id"].ToString()),
+                        {
+                            ConfigId = Convert.ToInt32(reader["id"].ToString()),
                             Name = reader["key_name_config"].ToString(),
                             Value = reader["value"].ToString(),
                         });
@@ -50,7 +51,7 @@ namespace Repository.SqlServer.CommonRepository
             {
                 var frecuencies = new List<Frecuency>();
                 var command = CreateCommand("PA_GET_FRECUENCY_GET_FRECUENCY");
-                command.CommandType = System.Data.CommandType.StoredProcedure;
+                command.CommandType = CommandType.StoredProcedure;
                 using (var reader = command.ExecuteReader())
                 {
                     while (reader.Read())
@@ -80,7 +81,7 @@ namespace Repository.SqlServer.CommonRepository
             {
                 var payMethods = new List<PayMethod>();
                 var command = CreateCommand("PA_PAYMETHODS_GET_PAY_METHOD");
-                command.CommandType = System.Data.CommandType.StoredProcedure;
+                command.CommandType = CommandType.StoredProcedure;
                 using (var reader = command.ExecuteReader())
                 {
                     while (reader.Read())
@@ -109,7 +110,7 @@ namespace Repository.SqlServer.CommonRepository
             {
                 var areas = new List<Area>();
                 var command = CreateCommand("PA_AREA_IN_COMBO_GET_AREA");
-                command.CommandType = System.Data.CommandType.StoredProcedure;
+                command.CommandType = CommandType.StoredProcedure;
                 using (var reader = command.ExecuteReader())
                 {
                     while (reader.Read())
@@ -129,13 +130,40 @@ namespace Repository.SqlServer.CommonRepository
             }
         }
 
+        public IEnumerable<Category> GetCategoriesInSelect()
+        {
+            try
+            {
+                var categories = new List<Category>();
+                var command = CreateCommand("PA_CATEGORY_IN_SELECT_GET_CATEGORY");
+                command.CommandType = CommandType.StoredProcedure;
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        categories.Add(new Category
+                        {
+                            Value = Convert.ToInt32(reader["id"].ToString()),
+                            Label = reader["name"].ToString(),
+                        });
+                    }
+                }
+
+                return categories;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
         public IEnumerable<Dashboard> GetCountPatientsType()
         {
             try
             {
                 var dashboards = new List<Dashboard>();
                 var command = CreateCommand("PA_GET_COUNT_PATIENTS_GET_PATIENT");
-                command.CommandType = System.Data.CommandType.StoredProcedure;
+                command.CommandType = CommandType.StoredProcedure;
                 using (var reader = command.ExecuteReader())
                 {
                     while (reader.Read())
@@ -164,7 +192,7 @@ namespace Repository.SqlServer.CommonRepository
             {
                 var afpSures = new List<AfpSure>();
                 var command = CreateCommand("PA_AFP_SURE_GET_AFP_SURE");
-                command.CommandType = System.Data.CommandType.StoredProcedure;
+                command.CommandType = CommandType.StoredProcedure;
                 using (var reader = command.ExecuteReader())
                 {
                     while (reader.Read())
@@ -191,7 +219,7 @@ namespace Repository.SqlServer.CommonRepository
             {
                 var modalityContracts = new List<ModalityContract>();
                 var command = CreateCommand("PA_MODALITY_IN_COMBO_GET_MODALITY_CONTRACT");
-                command.CommandType = System.Data.CommandType.StoredProcedure;
+                command.CommandType = CommandType.StoredProcedure;
                 using (var reader = command.ExecuteReader())
                 {
                     while (reader.Read())
@@ -218,7 +246,7 @@ namespace Repository.SqlServer.CommonRepository
             {
                 var roles = new List<Role>();
                 var command = CreateCommand("PA_CHARGE_IN_COMBO_GET_ROLE");
-                command.CommandType = System.Data.CommandType.StoredProcedure;
+                command.CommandType = CommandType.StoredProcedure;
                 using (var reader = command.ExecuteReader())
                 {
                     while (reader.Read())
@@ -246,7 +274,7 @@ namespace Repository.SqlServer.CommonRepository
             {
                 var typeOfContracts = new List<TypeOfContract>();
                 var command = CreateCommand("PA_TYPE_CONTRACT_IN_COMBO_GET_TYPE_OF_CONTRACT");
-                command.CommandType = System.Data.CommandType.StoredProcedure;
+                command.CommandType = CommandType.StoredProcedure;
                 using (var reader = command.ExecuteReader())
                 {
                     while (reader.Read())
@@ -273,7 +301,7 @@ namespace Repository.SqlServer.CommonRepository
             {
                 var vouchers = new List<VoucherDocument>();
                 var command = CreateCommand("PA_VO_DOC_GET_VOUCHER_DOCUMENT");
-                command.CommandType = System.Data.CommandType.StoredProcedure;
+                command.CommandType = CommandType.StoredProcedure;
                 using (var reader = command.ExecuteReader())
                 {
                     while (reader.Read())
@@ -301,7 +329,7 @@ namespace Repository.SqlServer.CommonRepository
                 var options = new List<Option>();
                 var command = CreateCommand("PA_MENU_GET_OPTION");
                 command.Parameters.AddWithValue("@v_employeed_id", employeedId);
-                command.CommandType = System.Data.CommandType.StoredProcedure;
+                command.CommandType = CommandType.StoredProcedure;
                 using (var reader = command.ExecuteReader())
                 {
                     while (reader.Read())
@@ -331,7 +359,7 @@ namespace Repository.SqlServer.CommonRepository
                 var options = new List<Option>();
                 var command = CreateCommand("PA_MENU_PADRE_GET_OPTION_BY_CODE_EMP");
                 command.Parameters.AddWithValue("@v_code_employeed", code);
-                command.CommandType = System.Data.CommandType.StoredProcedure;
+                command.CommandType = CommandType.StoredProcedure;
                 using (var reader = command.ExecuteReader())
                 {
                     while (reader.Read())
@@ -360,7 +388,7 @@ namespace Repository.SqlServer.CommonRepository
             {
                 var options = new List<Option>();
                 var command = CreateCommand("PA_ME_GET_OPTION");
-                command.CommandType = System.Data.CommandType.StoredProcedure;
+                command.CommandType = CommandType.StoredProcedure;
                 using (var reader = command.ExecuteReader())
                 {
                     while (reader.Read())
@@ -392,7 +420,7 @@ namespace Repository.SqlServer.CommonRepository
                 var command = CreateCommand("PA_MENU_GET_OPTION_ITEMS");
                 command.Parameters.AddWithValue("@v_option_id", optionId);
                 command.Parameters.AddWithValue("@v_employeed_id", employeedId);
-                command.CommandType = System.Data.CommandType.StoredProcedure;
+                command.CommandType = CommandType.StoredProcedure;
                 using (var reader = command.ExecuteReader())
                 {
                     while (reader.Read())
@@ -421,7 +449,7 @@ namespace Repository.SqlServer.CommonRepository
                 var optionsItems = new List<OptionItems>();
                 var command = CreateCommand("PA_MENU_HIJO_GET_OPTION_BY_CODE_EMP");
                 command.Parameters.AddWithValue("@v_code_employeed", code);
-                command.CommandType = System.Data.CommandType.StoredProcedure;
+                command.CommandType = CommandType.StoredProcedure;
 
                 using (var reader = command.ExecuteReader())
                 {
@@ -456,7 +484,7 @@ namespace Repository.SqlServer.CommonRepository
             {
                 var optionsItems = new List<OptionItems>();
                 var command = CreateCommand("PA_ME_GET_OPTION_ITEMS");
-                command.CommandType = System.Data.CommandType.StoredProcedure;
+                command.CommandType = CommandType.StoredProcedure;
                 using (var reader = command.ExecuteReader())
                 {
                     while (reader.Read())
@@ -490,7 +518,7 @@ namespace Repository.SqlServer.CommonRepository
             {
                 var items = new List<object>();
                 var command = CreateCommand("PA_GET_REPORT_MENSUAL_CATEGORY_TTO");
-                command.CommandType = System.Data.CommandType.StoredProcedure;
+                command.CommandType = CommandType.StoredProcedure;
                 using (var reader = command.ExecuteReader())
                 {
                     while (reader.Read())
@@ -507,7 +535,7 @@ namespace Repository.SqlServer.CommonRepository
                             Agosto = Convert.ToInt32(reader["8"]),
                             Septiembre = Convert.ToInt32(reader["9"]),
                             Octubre = Convert.ToInt32(reader["10"]),
-                            Noviembre = Convert.ToInt32(reader["11"]),  
+                            Noviembre = Convert.ToInt32(reader["11"]),
                             Diciembre = Convert.ToInt32(reader["12"]),
                         });
                     }
@@ -528,7 +556,7 @@ namespace Repository.SqlServer.CommonRepository
             {
                 var roles = new List<Role>();
                 var command = CreateCommand("PA_GET_ROLE");
-                command.CommandType = System.Data.CommandType.StoredProcedure;
+                command.CommandType = CommandType.StoredProcedure;
                 using (var reader = command.ExecuteReader())
                 {
                     while (reader.Read())
@@ -565,7 +593,7 @@ namespace Repository.SqlServer.CommonRepository
                 var routes = new List<Routes>();
                 var command = CreateCommand("PA_ROUTE_GET_ROUTES");
                 command.Parameters.AddWithValue("@v_employeed_id", employeedId);
-                command.CommandType = System.Data.CommandType.StoredProcedure;
+                command.CommandType = CommandType.StoredProcedure;
                 using (var reader = command.ExecuteReader())
                 {
                     while (reader.Read())
@@ -596,7 +624,7 @@ namespace Repository.SqlServer.CommonRepository
                 var routes = new List<Routes>();
                 var command = CreateCommand("PA_ROUTES_SPECIAL_GET_ROUTES");
                 command.Parameters.AddWithValue("@v_user_access", userCode);
-                command.CommandType = System.Data.CommandType.StoredProcedure;
+                command.CommandType = CommandType.StoredProcedure;
                 using (var reader = command.ExecuteReader())
                 {
                     while (reader.Read())
@@ -617,12 +645,40 @@ namespace Repository.SqlServer.CommonRepository
             }
         }
 
+        public IEnumerable<SubCategory> GetSubCategoriesInSelect(int categoryId)
+        {
+            try
+            {
+                var subCategories = new List<SubCategory>();
+                var command = CreateCommand("PA_SUB_CATEGORY_IN_SELECT_GET_SUB_CATEGORY");
+                command.Parameters.AddWithValue("@v_category_id", categoryId);
+                command.CommandType = CommandType.StoredProcedure;
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        subCategories.Add(new SubCategory
+                        {
+                            Value = Convert.ToInt32(reader["id"].ToString()),
+                            Label = reader["name"].ToString(),
+                        });
+                    }
+                }
+
+                return subCategories;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
         public bool PostRegisterFrecuencyClinic(Frecuency frecuency)
         {
             try
             {
                 var command = CreateCommand("PA_REGISTER_POST_FRECUENCY");
-                command.CommandType = System.Data.CommandType.StoredProcedure;
+                command.CommandType = CommandType.StoredProcedure;
                 command.Parameters.AddWithValue("@v_description", frecuency?.FrecuencyDescription);
                 command.Parameters.AddWithValue("@v_abbreviation", frecuency?.Abbreviation);
                 command.Parameters.AddWithValue("@_value", frecuency?.Value);
@@ -640,7 +696,7 @@ namespace Repository.SqlServer.CommonRepository
             try
             {
                 var command = CreateCommand("PA_ROLE_POST");
-                command.CommandType = System.Data.CommandType.StoredProcedure;
+                command.CommandType = CommandType.StoredProcedure;
                 command.Parameters.AddWithValue("@v_name", role?.Name);
                 command.Parameters.AddWithValue("@v_abbreviation", role?.Abbreviation);
                 command.Parameters.AddWithValue("@v_salary", role?.Salary);
@@ -659,7 +715,7 @@ namespace Repository.SqlServer.CommonRepository
             try
             {
                 var command = CreateCommand("PA_ADD_MENU_PERMISO_OPTION_PUT");
-                command.CommandType = System.Data.CommandType.StoredProcedure;
+                command.CommandType = CommandType.StoredProcedure;
                 command.Parameters.AddWithValue("@v_option_id", optionItemId);
                 command.Parameters.AddWithValue("@v_code_trabajador", code);
                 command.Parameters.AddWithValue("@v_padre_id", optionId);
@@ -677,7 +733,7 @@ namespace Repository.SqlServer.CommonRepository
             try
             {
                 var command = CreateCommand("PA_ADD_MENU_AUTH_FATHER_INSERT_PUT");
-                command.CommandType = System.Data.CommandType.StoredProcedure;
+                command.CommandType = CommandType.StoredProcedure;
                 command.Parameters.AddWithValue("@v_employeed_code", codeEmployeed);
                 command.Parameters.AddWithValue("@v_option_id", optionId);
 
@@ -694,7 +750,7 @@ namespace Repository.SqlServer.CommonRepository
             try
             {
                 var command = CreateCommand("PA_CONFIG_GENERAL_PUT_CONFIG");
-                command.CommandType = System.Data.CommandType.StoredProcedure;
+                command.CommandType = CommandType.StoredProcedure;
                 command.Parameters.AddWithValue("@v_value", config.Value);
                 command.Parameters.AddWithValue("@v_key_name", config.Name);
 
@@ -711,7 +767,7 @@ namespace Repository.SqlServer.CommonRepository
             try
             {
                 var command = CreateCommand("PA_PUT_DISABLED_ENABLED_ROLE");
-                command.CommandType = System.Data.CommandType.StoredProcedure;
+                command.CommandType = CommandType.StoredProcedure;
                 command.Parameters.AddWithValue("@v_role_id", roleId);
                 command.Parameters.AddWithValue("@v_type", type);
 
@@ -728,7 +784,7 @@ namespace Repository.SqlServer.CommonRepository
             try
             {
                 var command = CreateCommand("PA_REMOVE_MENU_PERMISO_OPTION_PUT");
-                command.CommandType = System.Data.CommandType.StoredProcedure;
+                command.CommandType = CommandType.StoredProcedure;
                 command.Parameters.AddWithValue("@v_option_item_id", optionItemId);
 
                 return Convert.ToInt32(command.ExecuteNonQuery()) > 0;
@@ -744,7 +800,7 @@ namespace Repository.SqlServer.CommonRepository
             try
             {
                 var command = CreateCommand("PA_PUT_ROLE");
-                command.CommandType = System.Data.CommandType.StoredProcedure;
+                command.CommandType = CommandType.StoredProcedure;
                 command.Parameters.AddWithValue("@v_name", role?.Name);
                 command.Parameters.AddWithValue("@v_abbreviation", role?.Abbreviation);
                 command.Parameters.AddWithValue("@v_salary", role?.Salary);
@@ -764,7 +820,7 @@ namespace Repository.SqlServer.CommonRepository
             try
             {
                 var command = CreateCommand("PA_UPDATE_FRECUENCY_PUT_FRECUENCY");
-                command.CommandType = System.Data.CommandType.StoredProcedure;
+                command.CommandType = CommandType.StoredProcedure;
                 command.Parameters.AddWithValue("@v_frecuency_id", frecuency?.FrecuencyId);
                 command.Parameters.AddWithValue("@v_description", frecuency?.FrecuencyDescription);
                 command.Parameters.AddWithValue("@v_abbreviation", frecuency?.Abbreviation);
@@ -786,7 +842,7 @@ namespace Repository.SqlServer.CommonRepository
                 var command = CreateCommand("PA_VERIFY_IS_PATIENT_ACTIVE_GET_BY_NAMES_PERSON");
                 command.Parameters.AddWithValue("@v_surnames", surnames);
                 command.Parameters.AddWithValue("@v_names", names);
-                command.CommandType = System.Data.CommandType.StoredProcedure;
+                command.CommandType = CommandType.StoredProcedure;
                 using (var reader = command.ExecuteReader())
                 {
                     while (reader.Read())

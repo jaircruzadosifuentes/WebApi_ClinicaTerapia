@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Serialization;
 using Newtonsoft.Json;
 using Repository.Interfaces;
-using Repository.SqlServer.DocumentRepository;
 using Microsoft.OpenApi.Models;
 
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
@@ -27,7 +26,6 @@ builder.Services.AddCors(options =>
         });
 });
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -48,6 +46,8 @@ builder.Services.AddTransient<IPayService, PayService>();
 builder.Services.AddTransient<IPaymentService, PaymentService>();
 builder.Services.AddTransient<IMessageService, MessageService>();
 builder.Services.AddTransient<IMovementService, MovementService>();
+builder.Services.AddTransient<IProductService, ProductService>();
+builder.Services.AddTransient<ISaleService, SaleService>();
 //Services
  
 var app = builder.Build();

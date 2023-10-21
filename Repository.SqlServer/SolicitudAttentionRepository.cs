@@ -8,7 +8,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Repository.SqlServer.SolicitudAttentionRepository
+namespace Repository.SqlServer
 {
     public class SolicitudAttentionRepository : Repository, ISolicitudAttentionRepository
     {
@@ -140,7 +140,7 @@ namespace Repository.SqlServer.SolicitudAttentionRepository
                                     }
                                 },
                             },
-                           
+
                         });
                     }
                 }
