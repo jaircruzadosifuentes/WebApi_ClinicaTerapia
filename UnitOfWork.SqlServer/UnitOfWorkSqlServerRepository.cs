@@ -1,20 +1,5 @@
 ﻿using Repository.Interfaces;
 using Repository.SqlServer;
-using Repository.SqlServer.CellPhoneRepository;
-using Repository.SqlServer.CommonRepository;
-using Repository.SqlServer.DocumentRepository;
-using Repository.SqlServer.EmailRepository;
-using Repository.SqlServer.EmployeedRepository;
-using Repository.SqlServer.ErrorRepository;
-using Repository.SqlServer.MessageRepository;
-using Repository.SqlServer.PacketsOrUnitSessionsRepository;
-using Repository.SqlServer.PatientInAttentionRepository;
-using Repository.SqlServer.PatientRepository;
-using Repository.SqlServer.PaymentRepository;
-using Repository.SqlServer.PayRepository;
-using Repository.SqlServer.PersonRepository;
-using Repository.SqlServer.ScheduleRepository;
-using Repository.SqlServer.SolicitudAttentionRepository;
 using System.Data.SqlClient;
 using UnitOfWork.Interfaces;
 
@@ -39,6 +24,8 @@ namespace UnitOfWork.SqlServer
         public IPaymentRepository PaymentRepository { get; }
         public IMessageRepository MessageRepository { get; }
         public IMovementsRepository MovementsRepository { get; }
+        public IProductRepository ProductRepository { get; }
+        public ISaleRepository SaleRepository { get; }
 
         public UnitOfWorkSqlServerRepository(SqlConnection context, SqlTransaction transaction)
         {
@@ -59,6 +46,8 @@ namespace UnitOfWork.SqlServer
             PaymentRepository = new PaymentRepository(context, transaction);
             MessageRepository = new MessageRepository(context, transaction);
             MovementsRepository = new MovementsRepository(context, transaction);
+            ProductRepository = new ProductRepository(context, transaction);
+            SaleRepository = new SaleRepository(context, transaction);
         }
     }
 }

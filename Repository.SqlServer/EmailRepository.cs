@@ -7,9 +7,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Repository.SqlServer.EmailRepository
+namespace Repository.SqlServer
 {
-    public class EmailRepository: Repository, IEmailRepository
+    public class EmailRepository : Repository, IEmailRepository
     {
         public EmailRepository(SqlConnection context, SqlTransaction transaction)
         {

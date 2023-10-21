@@ -12,5 +12,6 @@ namespace Repository.Interfaces
     {
         IEnumerable<Person> GetAllByPersonId(int personId);
         IEnumerable<Person> GetAll();
+        Person GetPersonByNroDocument(string nroDocument);
     }
 }

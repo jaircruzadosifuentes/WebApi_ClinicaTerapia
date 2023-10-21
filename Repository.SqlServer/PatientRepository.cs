@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Repository.SqlServer.PatientRepository
+namespace Repository.SqlServer
 {
     public class PatientRepository : Repository, IPatientRepository
     {
@@ -67,13 +67,13 @@ namespace Repository.SqlServer.PatientRepository
                     {
                         patientProgresses.Add(new PatientProgress
                         {
-                           ProgressDescription = reader["progress_description"].ToString(),
-                           Recommendation = reader["recommendation"].ToString(),
-                           DateOfAttention = Convert.ToDateTime(reader["date_of_attention"].ToString()),
-                           HourOffAttention = reader["hour_attention"].ToString(),
-                           IsAttention = Convert.ToBoolean(reader["is_atention"].ToString()),
-                           IsQueueRemoval = Convert.ToBoolean(reader["attendance"].ToString()),
-                           SystemHour = reader["system_hour"].ToString()
+                            ProgressDescription = reader["progress_description"].ToString(),
+                            Recommendation = reader["recommendation"].ToString(),
+                            DateOfAttention = Convert.ToDateTime(reader["date_of_attention"].ToString()),
+                            HourOffAttention = reader["hour_attention"].ToString(),
+                            IsAttention = Convert.ToBoolean(reader["is_atention"].ToString()),
+                            IsQueueRemoval = Convert.ToBoolean(reader["attendance"].ToString()),
+                            SystemHour = reader["system_hour"].ToString()
                         });
                     }
                 }
@@ -227,7 +227,7 @@ namespace Repository.SqlServer.PatientRepository
                                 }
                             },
                             Reason = reader["reason"].ToString(),
-                            UserNamePatient = reader["user_name"].ToString(),    
+                            UserNamePatient = reader["user_name"].ToString(),
                         });
                     }
                 }
@@ -404,12 +404,12 @@ namespace Repository.SqlServer.PatientRepository
                                 },
                                 Role = new Role()
                                 {
-                                   Name = reader["role_employeed"].ToString()
+                                    Name = reader["role_employeed"].ToString()
                                 },
                                 UserName = reader["user_name"].ToString()
                             },
                             IsQueueRemoval = Convert.ToBoolean(reader["on_hold"].ToString()),
-                            
+
                         });
                     }
                 }
@@ -577,8 +577,8 @@ namespace Repository.SqlServer.PatientRepository
                             {
                                 Description = reader["reason"].ToString()
                             },
-                            PatientSolicitude = new PatientSolicitude() 
-                            { 
+                            PatientSolicitude = new PatientSolicitude()
+                            {
                                 DateAttention = Convert.ToDateTime(reader["date_attention"].ToString()),
                                 HourAttention = reader["hour_attention"].ToString(),
                                 Employeed = new Employeed()
@@ -593,8 +593,8 @@ namespace Repository.SqlServer.PatientRepository
                                             CellPhoneNumber = reader["number_cellphone_em"].ToString()
                                         }
                                     },
-                                    Role = new Role() 
-                                    { 
+                                    Role = new Role()
+                                    {
                                         Name = reader["role"].ToString()
                                     },
                                     UserName = reader["user_name"].ToString()

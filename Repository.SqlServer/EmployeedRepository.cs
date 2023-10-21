@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Repository.SqlServer.EmployeedRepository
+namespace Repository.SqlServer
 {
     public class EmployeedRepository : Repository, IEmployeedRepository
     {
@@ -23,7 +23,7 @@ namespace Repository.SqlServer.EmployeedRepository
                 var employeeds = new List<Employeed>();
                 var command = CreateCommand(StoreProcedure.G_STORE_GETALL_EMPLOYEED);
                 command.CommandType = System.Data.CommandType.StoredProcedure;
-                using ( var reader = command.ExecuteReader())
+                using (var reader = command.ExecuteReader())
                 {
                     while (reader.Read())
                     {
@@ -57,6 +57,7 @@ namespace Repository.SqlServer.EmployeedRepository
                             },
                             VacationDays = Convert.ToDecimal(reader["vacation_days"].ToString()),
                             UserName = reader["user_name"].ToString(),
+                            AreaId = Convert.ToInt32(reader["area_id"].ToString()),
                             Campus = new Campus()
                             {
                                 Name = reader["campus_name"].ToString()
@@ -151,11 +152,12 @@ namespace Repository.SqlServer.EmployeedRepository
                     };
                     Role role = new()
                     {
-                       Name = reader["role"].ToString(),
-                       Area = new Area()
-                       {
-                           AreaDescription = reader["area"].ToString(),    
-                       }
+                        Name = reader["role"].ToString(),
+                        Area = new Area()
+                        {
+                            AreaId = Convert.ToInt32(reader["area_id"].ToString()),
+                            AreaDescription = reader["area"].ToString(),
+                        }
                     };
                     employeedEntity.Role = role;
                     employeedEntity.Person = person;
@@ -232,7 +234,8 @@ namespace Repository.SqlServer.EmployeedRepository
                     employeedEntity.StateAbbreviation = reader["abbreviation_state"].ToString();
                     employeedEntity.UserName = reader["user_name"].ToString();
                     employeedEntity.TypeUser = reader["typeUser"].ToString();
-                     
+                    employeedEntity.EmployeedCashRegisterId = Convert.ToInt32(reader["employeed_cash_register_id"].ToString());
+
                 }
             }
             return employeedEntity;

@@ -49,7 +49,8 @@ namespace Repository.SqlServer
                             CreatedAt = Convert.ToDateTime(reader["created_at"].ToString()),
                             PersonEmit = reader["person"].ToString(),
                             TypeTransaction = reader["type_transaction"].ToString(),
-                            TypeTransactionValue = Convert.ToInt32(reader["type_transaction_value"].ToString())
+                            TypeTransactionValue = Convert.ToInt32(reader["type_transaction_value"].ToString()),
+                            VoucherDocumentId = Convert.ToInt32(reader["voucher_document_id"].ToString())
                         });
                     }
                 }

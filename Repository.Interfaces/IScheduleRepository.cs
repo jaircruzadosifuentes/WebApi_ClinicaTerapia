@@ -11,6 +11,7 @@ namespace Repository.Interfaces
     {
         bool GenerateSchedule(PayDuesDetail payDuesDetail);
         IEnumerable<PayDuesDetail> GetAllSchedulePatient(int patientId);
+        IEnumerable<EmployeedDisponibilty> GetAllScheduleEmployeed(int employeedId);
 
     }
 }

@@ -11,7 +11,7 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 
-namespace Repository.SqlServer.PersonRepository
+namespace Repository.SqlServer
 {
     public class PersonRepository : Repository, IPersonRepository
     {
@@ -47,7 +47,7 @@ namespace Repository.SqlServer.PersonRepository
                 }
 
                 return persons;
-            } 
+            }
             catch (SqlException sql)
             {
                 throw new Exception(sql.Message);
@@ -63,5 +63,24 @@ namespace Repository.SqlServer.PersonRepository
             throw new NotImplementedException();
         }
 
+        public Person GetPersonByNroDocument(string nroDocument)
+        {
+            var command = CreateCommand("PA_DETAIL_PERSON_GET_BY_NRODOCUMENT");
+            Person? person = new();
+            command.CommandType = System.Data.CommandType.StoredProcedure;
+            command.Parameters.AddWithValue("@v_nro_document", nroDocument);
+            using (var reader = command.ExecuteReader())
+            {
+                if (reader.Read())
+                {
+                    person = new()
+                    {
+                        Names = reader["names"].ToString(),
+                        Surnames = reader["surnames"].ToString(),
+                    };
+                }
+            }
+            return person;
+        }
     }
 }

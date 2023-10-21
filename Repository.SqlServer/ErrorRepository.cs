@@ -8,7 +8,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Repository.SqlServer.ErrorRepository
+namespace Repository.SqlServer
 {
     public class ErrorRepository : Repository, IErrorRepository
     {

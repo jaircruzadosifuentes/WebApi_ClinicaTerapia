@@ -2,7 +2,7 @@
 using Repository.Interfaces;
 using System.Data.SqlClient;
 
-namespace Repository.SqlServer.ScheduleRepository
+namespace Repository.SqlServer
 {
     public class ScheduleRepository : Repository, IScheduleRepository
     {
@@ -23,6 +23,36 @@ namespace Repository.SqlServer.ScheduleRepository
                 command.Parameters.AddWithValue("@v_initial_date", payDuesDetail?.InitialDate.ToString("yyyy/MM/dd"));
 
                 return Convert.ToInt32(command.ExecuteScalar()) > 0;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public IEnumerable<EmployeedDisponibilty> GetAllScheduleEmployeed(int employeedId)
+        {
+            try
+            {
+                var employeeds = new List<EmployeedDisponibilty>();
+                var command = CreateCommand("PA_SCHEDULE_SESSIONS_GET_BY_ID_EMPLOYEED");
+                command.Parameters.AddWithValue("@v_employeed_id", employeedId);
+                command.CommandType = System.Data.CommandType.StoredProcedure;
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        employeeds.Add(new EmployeedDisponibilty
+                        {
+                            Name = reader["name"].ToString(),
+                            startDateTime = Convert.ToDateTime(reader["startDateTime"]),
+                            endDateTime = Convert.ToDateTime(reader["endDateTime"]),
+                            State = Convert.ToInt32(reader["state"])
+                        });
+                    }
+                }
+
+                return employeeds;
             }
             catch (Exception)
             {

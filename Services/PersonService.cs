@@ -14,6 +14,7 @@ namespace Services
     public interface IPersonService
     {
         IEnumerable<Person> GetAll();
+        Person GetPersonByNroDocument(string nroDocument);
     }
 
     public class PersonService : IPersonService
@@ -49,6 +50,12 @@ namespace Services
                 int codeError = context.Repositories.ErrorRepository.InsertErrorRepository(error);
                 throw new Exception(string.Concat(Constantes.G_MESSAGE_ERROR_WITH_CODE, codeError.ToString()));
             }
+        }
+
+        public Person GetPersonByNroDocument(string nroDocument)
+        {
+            using var context = _unitOfWork.Create();
+            return context.Repositories.PersonRepository.GetPersonByNroDocument(nroDocument);
         }
     }
 }

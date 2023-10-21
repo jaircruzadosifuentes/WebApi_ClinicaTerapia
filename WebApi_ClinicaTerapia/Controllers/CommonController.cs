@@ -13,6 +13,7 @@ namespace WebApi_ClinicaTerapia.Controllers
     {
         private readonly ICommonService _commonService;
 
+        
         public CommonController(ICommonService commonService)
         {
             _commonService = commonService;
@@ -185,6 +186,18 @@ namespace WebApi_ClinicaTerapia.Controllers
         public ActionResult<IEnumerable<Config>> GetAllConfigs()
         {
             var configs = _commonService.GetAllConfigs();
+            return Ok(configs);
+        } 
+        [HttpGet("GetCategoriesInSelect")]
+        public ActionResult<IEnumerable<Category>> GetCategoriesInSelect()
+        {
+            var configs = _commonService.GetCategoriesInSelect();
+            return Ok(configs);
+        } 
+        [HttpGet("GetSubCategoriesInSelect/{categoryId}")]
+        public ActionResult<IEnumerable<Category>> GetSubCategoriesInSelect(int categoryId)
+        {
+            var configs = _commonService.GetSubCategoriesInSelect(categoryId);
             return Ok(configs);
         }
     }

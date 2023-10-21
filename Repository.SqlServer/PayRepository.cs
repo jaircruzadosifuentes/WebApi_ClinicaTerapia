@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Repository.SqlServer.PayRepository
+namespace Repository.SqlServer
 {
     public class PayRepository : Repository, IPayRepository
     {

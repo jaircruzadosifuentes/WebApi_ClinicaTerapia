@@ -39,5 +39,7 @@ namespace Repository.Interfaces
         IEnumerable<Config> GetAllConfigs();
         bool PutConfig(Config config);
         IEnumerable<Routes> GetRoutesSpecial(string userCode);
+        IEnumerable<Category> GetCategoriesInSelect();
+        IEnumerable<SubCategory> GetSubCategoriesInSelect(int categoryId);
     }
 }

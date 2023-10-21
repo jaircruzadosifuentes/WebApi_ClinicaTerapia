@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Repository.SqlServer.PacketsOrUnitSessionsRepository
+namespace Repository.SqlServer
 {
     public class PacketsOrUnitSessionsRepository : Repository, IPacketsOrUnitSessionsRepository
     {
