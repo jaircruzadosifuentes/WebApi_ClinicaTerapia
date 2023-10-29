@@ -48,6 +48,7 @@ builder.Services.AddTransient<IMessageService, MessageService>();
 builder.Services.AddTransient<IMovementService, MovementService>();
 builder.Services.AddTransient<IProductService, ProductService>();
 builder.Services.AddTransient<ISaleService, SaleService>();
+builder.Services.AddTransient<IContabilidadService, ContabilidadService>();
 //Services
  
 var app = builder.Build();

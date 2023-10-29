@@ -22,5 +22,7 @@ namespace Entities
         public string? TypeTransaction { get; set; }
         public int TypeTransactionValue { get; set; }
         public int VoucherDocumentId { get; set; }
+        public int EmployeedCashRegisterId { get; set; }
+        public VoucherDocument? VoucherDocument { get; set; }
     }
 }

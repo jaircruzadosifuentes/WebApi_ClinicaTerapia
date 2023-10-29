@@ -18,7 +18,6 @@ namespace WebApi_ClinicaTerapia.Controllers
         {
             _documentService = documentService;
         }
-        [EnableCors("_myAllowSpecificOrigins")]
         [HttpGet(Name = "GetAllDocuments")]
         public ActionResult<IEnumerable<Document>> GetAllDocuments()
         {

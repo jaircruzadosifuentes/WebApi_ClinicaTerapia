@@ -117,6 +117,7 @@ namespace Repository.SqlServer
                 command.Parameters.AddWithValue("@v_monetary_exchange", paymentScheduleDetail?.MonetaryExchange);
                 command.Parameters.AddWithValue("@v_type_document_vou", paymentScheduleDetail?.VoucherDocument?.Value);
                 command.Parameters.AddWithValue("@v_is_new_customer", paymentScheduleDetail?.IsNewCustomer);
+                command.Parameters.AddWithValue("@v_employeed_cash_id", paymentScheduleDetail?.EmployeedCashRegisterId);
 
 
                 return Convert.ToInt32(command.ExecuteNonQuery()) > 0;
