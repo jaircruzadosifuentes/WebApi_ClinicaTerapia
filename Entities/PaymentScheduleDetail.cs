@@ -21,5 +21,6 @@ namespace Entities
         public decimal? Cash { get; set;}
         public VoucherDocument? VoucherDocument { get; set; }
         public bool? IsNewCustomer { get; set; }
+        public int? EmployeedCashRegisterId { get; set; }
     }
 }

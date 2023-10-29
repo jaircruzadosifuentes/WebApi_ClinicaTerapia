@@ -28,5 +28,6 @@ namespace UnitOfWork.Interfaces
         IMovementsRepository MovementsRepository { get; }
         IProductRepository ProductRepository { get; }
         ISaleRepository SaleRepository { get; }
+        IContabilidadRepository ContabilidadRepository { get; }
     }
 }

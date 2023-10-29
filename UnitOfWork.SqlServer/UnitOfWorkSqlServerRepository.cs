@@ -26,6 +26,7 @@ namespace UnitOfWork.SqlServer
         public IMovementsRepository MovementsRepository { get; }
         public IProductRepository ProductRepository { get; }
         public ISaleRepository SaleRepository { get; }
+        public IContabilidadRepository ContabilidadRepository { get; }
 
         public UnitOfWorkSqlServerRepository(SqlConnection context, SqlTransaction transaction)
         {
@@ -48,6 +49,7 @@ namespace UnitOfWork.SqlServer
             MovementsRepository = new MovementsRepository(context, transaction);
             ProductRepository = new ProductRepository(context, transaction);
             SaleRepository = new SaleRepository(context, transaction);
+            ContabilidadRepository = new ContabilidadRepository(context, transaction);
         }
     }
 }
