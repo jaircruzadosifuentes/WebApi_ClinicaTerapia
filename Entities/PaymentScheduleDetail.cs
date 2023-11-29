@@ -15,6 +15,7 @@ namespace Entities
         public string? State { get; set; }
         public string? UserPayment { get; set; }
         public DateTime? PaymentDate { get; set; }
+        public DateTime? PaymentDateCanceled { get; set; }
         public string? ConceptoPago { get; set; }
         public PayMethod? PayMethod { get; set; }
         public decimal? MonetaryExchange { get; set; }

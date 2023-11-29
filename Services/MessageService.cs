@@ -29,20 +29,35 @@ namespace Services
         public IEnumerable<Message> GetMessageDetailUsersMessage(int fromId, string fromTyperUser)
         {
             using var context = _unitOfWork.Create();
-            return context.Repositories.MessageRepository.GetMessageDetailUsersMessage(fromId, fromTyperUser);
+            var messages = context.Repositories.MessageRepository.GetMessageDetailUsersMessage(fromId, fromTyperUser);
+            foreach (var message in messages)
+            {
+                message.Person.ProfilePicture = context.Repositories.CommonRepository.GetUrlImageFromS3(profilePicture: message.Person.ProfilePicture ?? "", "perfil", "bucket-users-photos");
+            }
+            return messages;
         }
 
         public IEnumerable<Message> GetMessageForReceptorId(int toId, int fromId, string typeUserTo)
         {
             using var context = _unitOfWork.Create();
             UpdateSeenMessage(toId, fromId);
-            return context.Repositories.MessageRepository.GetMessageForReceptorId(toId, fromId, typeUserTo);
+            var messages = context.Repositories.MessageRepository.GetMessageForReceptorId(toId, fromId, typeUserTo);
+            foreach (var message in messages)
+            {
+                message.Person.ProfilePicture = context.Repositories.CommonRepository.GetUrlImageFromS3(profilePicture: message.Person.ProfilePicture ?? "", "perfil", "bucket-users-photos");
+            }
+            return messages;
         }
 
         public IEnumerable<Message> GetMessagesForUserId(int fromId, string typeFromUser)
         {
             using var context = _unitOfWork.Create();
-            return context.Repositories.MessageRepository.GetMessagesForUserId(fromId, typeFromUser);
+            var messages = context.Repositories.MessageRepository.GetMessagesForUserId(fromId, typeFromUser);
+            foreach (var message in messages)
+            {
+                message.Person.ProfilePicture = context.Repositories.CommonRepository.GetUrlImageFromS3(profilePicture: message.Person.ProfilePicture ?? "", "perfil", "bucket-users-photos");
+            }
+            return messages;
         }
 
         public bool InsertaMessage(Message message)

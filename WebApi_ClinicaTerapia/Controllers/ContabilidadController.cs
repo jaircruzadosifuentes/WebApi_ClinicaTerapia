@@ -52,6 +52,11 @@ namespace WebApi_ClinicaTerapia.Controllers
         {
             _contabilidadService.PostCloseCajaChica(cajaChica);
         } 
+        [HttpPut("CloseCashRegisterById")]
+        public void CloseCashRegisterById(CashRegisterDetail cashRegisterDetail)
+        {
+            _contabilidadService.CloseCashRegisterById(cashRegisterDetail);
+        } 
         [HttpPost("PostApertuCajaChica")]
         public void PostApertuCajaChica(CajaChica cajaChica)
         {

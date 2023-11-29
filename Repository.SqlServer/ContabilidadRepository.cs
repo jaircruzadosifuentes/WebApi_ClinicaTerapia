@@ -17,6 +17,22 @@ namespace Repository.SqlServer
             _transaction = transaction;
         }
 
+        public bool CloseCashRegisterById(CashRegisterDetail cashRegisterDetail)
+        {
+            try
+            {
+                var command = CreateCommand("PA_CLOSE_CASH_REGISTER_BY_ID_PUT");
+                command.CommandType = System.Data.CommandType.StoredProcedure;
+                command.Parameters.AddWithValue("@v_cash_register_id", cashRegisterDetail.CashRegisterDetailId);
+
+                return Convert.ToInt32(command.ExecuteNonQuery()) > 0;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
         public CajaChica DetailDataEmployeedCajaChica(int employeedId, DateTime dateApertu)
         {
             var command = CreateCommand("PA_DETAIL_DATA_EMP_GET_BY_ID_AND_FECHA");
@@ -137,7 +153,8 @@ namespace Repository.SqlServer
                         CashRegister = reader["caja"].ToString(),
                         MontoAperturado = Convert.ToDecimal(reader["opened_amount"].ToString()),
                         FechaApertu = Convert.ToDateTime(reader["opening_date"].ToString()),
-                        IsApertu = Convert.ToInt32(reader["is_close"].ToString())
+                        IsApertu = Convert.ToInt32(reader["is_close"].ToString()),
+                        CajaChicaId = Convert.ToInt32(reader["id"].ToString())
                     });
                 }
             }

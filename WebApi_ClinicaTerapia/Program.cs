@@ -20,7 +20,7 @@ builder.Services.AddCors(options =>
         policy =>
         {
             policy.WithOrigins("http://localhost:3000",
-                                "*")
+                                "http://localhost:3001")
                                 .AllowAnyHeader()
                                 .AllowAnyMethod();
         });
@@ -49,6 +49,7 @@ builder.Services.AddTransient<IMovementService, MovementService>();
 builder.Services.AddTransient<IProductService, ProductService>();
 builder.Services.AddTransient<ISaleService, SaleService>();
 builder.Services.AddTransient<IContabilidadService, ContabilidadService>();
+builder.Services.AddTransient<IQuizService, QuizService>();
 //Services
  
 var app = builder.Build();

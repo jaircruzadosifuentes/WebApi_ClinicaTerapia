@@ -14,7 +14,7 @@ namespace Repository.Interfaces
         bool ApprovePatientNew(int patientId, string type);
         bool PutApproveSolicitude(int patientId, string type);
         IEnumerable<Patient> GetAllPatientsNewAttentionByEmployeedId(int employeedId);
-        IEnumerable<PatientProgress> GetSessionForPatientId(int patientId);
+        IEnumerable<PatientProgress> GetSessionForPatientId(int patientId, bool finishedTreatment);
         IEnumerable<Patient> GetAllPatientsPatientWithAppoiment();
         IEnumerable<Patient> GetAllPatientsInTreatment();
         IEnumerable<Patient> GetAllPatientsFinishedTreatment();
@@ -25,5 +25,6 @@ namespace Repository.Interfaces
         bool PutUpdateHourSesion(PatientProgress patientProgress);
         IEnumerable<Patient> GetAllPatientsInWaiting();
         IEnumerable<Patient> GetAllPatientsInAttention();
+        PatientProgress GetItemSesionDetailById(int patientDetailSesionId);
     }
 }

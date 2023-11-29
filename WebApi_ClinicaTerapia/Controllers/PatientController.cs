@@ -84,6 +84,12 @@ namespace WebApi_ClinicaTerapia.Controllers
             var patients = _patientService.GetByIdPatientProgress(patientId);
             return Ok(patients);
         }
+        [HttpGet("GetItemSesionDetailById/{patientDetailSesionId}")]
+        public ActionResult<PatientProgress> GetItemSesionDetailById(int patientDetailSesionId)
+        {
+            var objPatientDetail = _patientService.GetItemSesionDetailById(patientDetailSesionId);
+            return Ok(objPatientDetail);
+        }
         [HttpPut("PutApprovePatientNew/{patientId}/{type}")]
         public ActionResult<IEnumerable<PatientInQueueGeneral>> PutApprovePatientNew(int patientId, string type)
         {

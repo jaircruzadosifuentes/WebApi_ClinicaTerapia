@@ -17,6 +17,7 @@ namespace Services
         CajaChica DetailDataEmployeedCajaChica(int employeedId, DateTime dateApertu);
         bool PostApertuCajaChica(CajaChica cajachica);
         List<CajaChica> GetHistDetailCajaChicaByIdEmployeed(int employeedId);
+        bool CloseCashRegisterById(CashRegisterDetail cashRegisterDetail);
     }
     public class ContabilidadService : IContabilidadService
     {
@@ -25,6 +26,14 @@ namespace Services
         public ContabilidadService(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
+        }
+
+        public bool CloseCashRegisterById(CashRegisterDetail cashRegisterDetail)
+        {
+            using var context = _unitOfWork.Create();
+            bool insert = context.Repositories.ContabilidadRepository.CloseCashRegisterById(cashRegisterDetail);
+            context.SaveChanges();
+            return insert;
         }
 
         public CajaChica DetailDataEmployeedCajaChica(int employeedId, DateTime dateApertu)

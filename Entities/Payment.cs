@@ -19,6 +19,20 @@ namespace Entities
         public int DebtNumbertMax { get; set; }
         public List<PaymentScheduleDetail> PaymentScheduleDetails { get; set; }
 
+        //Pendiente de pagos
+        public int CuoPendingPayment { get; set; }
+        public DateTime NextPaymentDate { get; set; }
+        public int LateDays { get; set; }
+        public string? StatePay { get; set; }
+        public DateTime DateOfIssue { get; set; }
+        public Campus? Campus{ get; set; }
+        public int? StatePayId { get; set; }
+        public DateTime? SesionDateMin { get; set; }
+        public DateTime? SesionDateMax { get; set; }
+        public Employeed? Employeed { get; set; }
+        public string? UserPay { get; set; }
+        public int? StateValue { get; set; }
+        public int? StatePayValue { get; set; }
         public Payment()
         {
             PaymentScheduleDetails = new List<PaymentScheduleDetail>();

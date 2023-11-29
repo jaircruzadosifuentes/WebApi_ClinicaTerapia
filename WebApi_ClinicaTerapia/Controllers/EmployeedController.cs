@@ -1,4 +1,6 @@
-﻿using Entities;
+﻿using Amazon.S3.Transfer;
+using Amazon.S3;
+using Entities;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -62,6 +64,33 @@ namespace WebApi_ClinicaTerapia.Controllers
         public void PutAppproveContractEmployeed(Employeed employeed)
         {
             _employeedService.PutAppproveContractEmployeed(employeed);
+        }
+
+        [HttpPost("UploadProfile")]
+        [Consumes("multipart/form-data")]
+        public async Task<IActionResult>UploadProfile(IFormFile file, [FromForm] int id)
+        {
+            try
+            {
+                if (file == null || file.Length == 0)
+                {
+                    return BadRequest("No file uploaded");
+                }
+
+                bool upload = await _employeedService.UpdateProfilePicture(file, id);
+                if (upload)
+                {
+                    return Ok("File uploaded successfully to Amazon S3");
+                }
+                else
+                {
+                    return Ok("Error al subir imagen Amazon S3");
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error uploading file to Amazon S3: {ex.Message}");
+            }
         }
     }
 }

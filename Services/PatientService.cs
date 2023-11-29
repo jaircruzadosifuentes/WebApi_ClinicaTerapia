@@ -25,6 +25,7 @@ namespace Services
         bool PutUpdateHourSesion(PatientProgress patientProgress);
         IEnumerable<Patient> GetAllPatientsInWaiting();
         IEnumerable<Patient> GetAllPatientsInAttention();
+        PatientProgress GetItemSesionDetailById(int patientDetailSesionId);
     }
     public class PatientService : IPatientService
     {
@@ -69,7 +70,7 @@ namespace Services
             var patients = context.Repositories.PatientRepository.GetAllPatientsInTreatment();
             foreach (var patient in patients)
             {
-                patient.PatientProgresses = (List<PatientProgress>)context.Repositories.PatientRepository.GetSessionForPatientId(patient.PatientId);
+                patient.PatientProgresses = (List<PatientProgress>)context.Repositories.PatientRepository.GetSessionForPatientId(patient.PatientId, false);
             }
             return patients;
         }
@@ -86,7 +87,7 @@ namespace Services
             var patients = context.Repositories.PatientRepository.GetAllPatientsPatientWithAppoiment();
             foreach (var patient in patients)
             {
-                patient.PatientProgresses = (List<PatientProgress>)context.Repositories.PatientRepository.GetSessionForPatientId(patient.PatientId);
+                patient.PatientProgresses = (List<PatientProgress>)context.Repositories.PatientRepository.GetSessionForPatientId(patient.PatientId, false);
             }
             return patients;
         }
@@ -132,7 +133,7 @@ namespace Services
             var patients = context.Repositories.PatientRepository.GetAllPatientsFinishedTreatment();
             foreach (var patient in patients)
             {
-                patient.PatientProgresses = (List<PatientProgress>)context.Repositories.PatientRepository.GetSessionForPatientId(patient.PatientId);
+                patient.PatientProgresses = (List<PatientProgress>)context.Repositories.PatientRepository.GetSessionForPatientId(patient.PatientId, true);
             }
             return patients;
         }
@@ -147,6 +148,12 @@ namespace Services
         {
             using var context = _unitOfWork.Create();
             return context.Repositories.PatientRepository.GetAllPatientsInAttention();
+        }
+
+        public PatientProgress GetItemSesionDetailById(int patientDetailSesionId)
+        {
+            using var context = _unitOfWork.Create();
+            return context.Repositories.PatientRepository.GetItemSesionDetailById(patientDetailSesionId);
         }
     }
 }

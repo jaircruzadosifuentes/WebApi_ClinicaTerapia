@@ -27,6 +27,7 @@ namespace UnitOfWork.SqlServer
         public IProductRepository ProductRepository { get; }
         public ISaleRepository SaleRepository { get; }
         public IContabilidadRepository ContabilidadRepository { get; }
+        public IQuizRepository QuizRepository { get; }
 
         public UnitOfWorkSqlServerRepository(SqlConnection context, SqlTransaction transaction)
         {
@@ -50,6 +51,7 @@ namespace UnitOfWork.SqlServer
             ProductRepository = new ProductRepository(context, transaction);
             SaleRepository = new SaleRepository(context, transaction);
             ContabilidadRepository = new ContabilidadRepository(context, transaction);
+            QuizRepository = new QuizRepository(context, transaction);
         }
     }
 }

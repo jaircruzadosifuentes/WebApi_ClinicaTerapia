@@ -157,7 +157,8 @@ namespace Repository.SqlServer
                                 Frecuency = new Frecuency()
                                 {
                                     FrecuencyDescription = reader["frecuency_desc"].ToString()
-                                }
+                                },
+                                DescriptionDiagnostica = reader["diagnosis"].ToString()
                             },
                             PatientSolicitude = new PatientSolicitude()
                             {
@@ -166,7 +167,10 @@ namespace Repository.SqlServer
                                     EmployeedId = Convert.ToInt32(reader["employeed_id"].ToString())
                                 }
                             },
-                            UserNamePatient = reader["user_name"].ToString()
+                            UserNamePatient = reader["user_name"].ToString(),
+                            IsDoneQuiz = Convert.ToBoolean(reader["is_done_quiz"].ToString()),
+                            IsGenerateCredentials = Convert.ToBoolean(reader["is_generate_credential"].ToString()),
+                            
                         });
                     }
                 }
@@ -422,13 +426,14 @@ namespace Repository.SqlServer
             }
         }
 
-        public IEnumerable<PatientProgress> GetSessionForPatientId(int patientId)
+        public IEnumerable<PatientProgress> GetSessionForPatientId(int patientId, bool finishedTreatment)
         {
             try
             {
                 var patientProgress = new List<PatientProgress>();
                 var command = CreateCommand("PA_SESSIONS_PATIENT_GETBYID_PATIENT");
                 command.Parameters.AddWithValue("@v_patient_id", patientId);
+                command.Parameters.AddWithValue("@v_finished_treatment", finishedTreatment);
                 command.CommandType = System.Data.CommandType.StoredProcedure;
                 using (var reader = command.ExecuteReader())
                 {
@@ -535,9 +540,12 @@ namespace Repository.SqlServer
                                 Frecuency = new Frecuency()
                                 {
                                     FrecuencyDescription = reader["frecuency_desc"].ToString()
-                                }
+                                },
+                                DescriptionDiagnostica = reader["diagnosis"].ToString()
                             },
-                            UserNamePatient = reader["user_name_patient"].ToString()
+                            UserNamePatient = reader["user_name_patient"].ToString(),
+                            IsDoneQuiz = Convert.ToBoolean(reader["is_done_quiz"].ToString()),
+                            IsGenerateCredentials = Convert.ToBoolean(reader["is_generate_credential"].ToString()),
                         });
                     }
                 }
@@ -659,6 +667,47 @@ namespace Repository.SqlServer
                 }
 
                 return patients;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public PatientProgress GetItemSesionDetailById(int patientDetailSesionId)
+        {
+            try
+            {
+                var objPatient = new PatientProgress();
+                var command = CreateCommand("PA_GET_ITEM_SESION_DETAIL_GET_BY_ID_PATIENT_PROGRESS_SESION");
+                command.CommandType = System.Data.CommandType.StoredProcedure;
+                command.Parameters.AddWithValue("@v_patient_detail_id", patientDetailSesionId);
+
+                using (var reader = command.ExecuteReader())
+                {
+                    if (reader.Read())
+                    {
+                        objPatient = (new PatientProgress
+                        {
+                            Recommendation = reader["recommendation"].ToString(),
+                            ProgressDescription = reader["progress_description"].ToString(),
+                            //TimeDemoration = Convert.ToInt32(reader["time_demoration"].ToString()),
+                            HourOffAttention = reader["session_hour"].ToString(),
+                            DateOfAttention = Convert.ToDateTime(reader["session_date"].ToString()),
+                            State = reader["state"].ToString(),
+                            Employeed = new Employeed()
+                            {
+                                Person = new Person()
+                                {
+                                    Names = reader["names"].ToString(),
+                                    Surnames = reader["surnames"].ToString(),
+                                }
+                            }
+                        });
+                    }
+                }
+
+                return objPatient;
             }
             catch (Exception)
             {

@@ -29,5 +29,6 @@ namespace UnitOfWork.Interfaces
         IProductRepository ProductRepository { get; }
         ISaleRepository SaleRepository { get; }
         IContabilidadRepository ContabilidadRepository { get; }
+        IQuizRepository QuizRepository { get; }
     }
 }

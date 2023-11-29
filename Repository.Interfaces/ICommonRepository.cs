@@ -1,4 +1,5 @@
 ﻿using Entities;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -41,5 +42,8 @@ namespace Repository.Interfaces
         IEnumerable<Routes> GetRoutesSpecial(string userCode);
         IEnumerable<Category> GetCategoriesInSelect();
         IEnumerable<SubCategory> GetSubCategoriesInSelect(int categoryId);
+        string GetUrlImageFromS3(string profilePicture, string carpeta, string bucketName);
+        Task<bool> UploadFileS3Async(IFormFile file, string nameBucket, string name);
+
     }
 }
