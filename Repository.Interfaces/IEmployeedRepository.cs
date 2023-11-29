@@ -16,6 +16,7 @@ namespace Repository.Interfaces
         Employeed GetByUserNameEmployeed(string userName);
         bool PostRegisterEmployeed(Employeed employeed);
         bool PutAppproveContractEmployeed(Employeed employeed);
+        bool PutUpdateProfile(string nameProfile, int id);
 
     }
 }

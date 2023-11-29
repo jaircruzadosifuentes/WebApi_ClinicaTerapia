@@ -10,6 +10,7 @@ namespace Repository.Interfaces
     public interface IPaymentRepository
     {
         IEnumerable<Payment> GetPayments();
+        IEnumerable<Payment> GetDetailPayPendingGetByIdPayment(int paymentId);
         IEnumerable<PaymentScheduleDetail> GetPaymentsScheduleDetail(int paymentId);
         bool PutUpdateDebtPayment(PaymentScheduleDetail paymentScheduleDetail);
 

@@ -1,4 +1,7 @@
-﻿using Common;
+﻿using Amazon.Runtime;
+using Amazon.S3.Model;
+using Amazon.S3;
+using Common;
 using Entities;
 using System;
 using System.Collections.Generic;
@@ -43,6 +46,7 @@ namespace Services
         IEnumerable<Routes> GetRoutesSpecial(string userCode);
         IEnumerable<SubCategory> GetSubCategoriesInSelect(int categoryId);
         IEnumerable<Category> GetCategoriesInSelect();
+        string GetUrlImageProfileEmployeed(string profilePicture);
 
     }
     public class CommonService : ICommonService
@@ -224,6 +228,36 @@ namespace Services
             return context.Repositories.CommonRepository.GetSubCategoriesInSelect(categoryId);
         }
 
+        public string GetUrlImageProfileEmployeed(string profilePicture)
+        {
+            var awsKeyId = "AKIA4AHGPS7ULPQ5CFPD";
+            var awsSecretKey = "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";
+            var awsServiceUrl = "https://s3.amazonaws.com";
+            var awsRegionId = "us-east-2";
+            var awsBucket = "bucket-users-photos";
+
+            AWSCredentials credentials = new BasicAWSCredentials(awsKeyId, awsSecretKey);
+            AmazonS3Config config = new()
+            {
+                ServiceURL = awsServiceUrl,
+                RegionEndpoint = Amazon.RegionEndpoint.GetBySystemName(awsRegionId)
+            };
+            var s3ClientGetUrl = new AmazonS3Client(credentials, config);
+
+            string keyPath = getKeyPath(profilePicture);
+
+            GetPreSignedUrlRequest request1 = new()
+            {
+                BucketName = awsBucket,
+                Key = keyPath,
+                Expires = DateTime.Now.AddMinutes(60)
+            };
+            return s3ClientGetUrl.GetPreSignedURL(request1);
+        }
+        public string getKeyPath(string profilePicture)
+        {
+            return "perfil/" + profilePicture;
+        }
         public bool PostRegisterFrecuencyClinic(Frecuency frecuency)
         {
             using var context = _unitOfWork.Create();

@@ -19,6 +19,7 @@ namespace Entities
         public decimal? StockStore { get; set; }
         public decimal? CostPrice { get; set; }
         public decimal? Utility { get; set; }
+        public string? Imagen { get; set; }
 
     }
 }

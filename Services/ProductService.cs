@@ -24,6 +24,10 @@ namespace Services
         {
             using var context = _unitOfWork.Create();
             var products = context.Repositories.ProductRepository.GetProductoByCategoryIdSubCategoryId(categoryId, subCategoryId);
+            foreach (var product in products)
+            {
+                product.Imagen = context.Repositories.CommonRepository.GetUrlImageFromS3(product?.Imagen??"", "products", "bucket-users-photos");
+            }
             return products; 
         }
     }

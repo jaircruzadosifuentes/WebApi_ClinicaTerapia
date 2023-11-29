@@ -1,10 +1,19 @@
-﻿using Entities;
+﻿using Amazon.Runtime;
+using Amazon.S3;
+using Amazon.S3.Model;
+using Amazon.S3.Transfer;
+using Entities;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Internal;
+using Newtonsoft.Json.Linq;
 using Repository.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -17,7 +26,36 @@ namespace Repository.SqlServer
             _context = context;
             _transaction = transaction;
         }
+        public string GetUrlImageFromS3(string profilePicture, string carpeta, string bucketName)
+        {
+            var awsKeyId = ConfigurationManager.AppSettings["AWSAccessKey"]; 
+            var awsSecretKey = ConfigurationManager.AppSettings["AWSSecretKey"];
+            var awsServiceUrl = ConfigurationManager.AppSettings["AWSServiceUrl"];
+            var awsRegionId = ConfigurationManager.AppSettings["AWSRegionId"];
+            var awsBucket = bucketName;
 
+            AWSCredentials credentials = new BasicAWSCredentials(awsKeyId, awsSecretKey);
+            AmazonS3Config config = new()
+            {
+                ServiceURL = awsServiceUrl,
+                RegionEndpoint = Amazon.RegionEndpoint.GetBySystemName(awsRegionId)
+            };
+            var s3ClientGetUrl = new AmazonS3Client(credentials, config);
+
+            string keyPath = getKeyPath(profilePicture, carpeta);
+
+            GetPreSignedUrlRequest request1 = new()
+            {
+                BucketName = awsBucket,
+                Key = keyPath,
+                Expires = DateTime.Now.AddMinutes(60)
+            };
+            return s3ClientGetUrl.GetPreSignedURL(request1);
+        }
+        public string getKeyPath(string profilePicture, string carpeta)
+        {
+            return carpeta + "/" + profilePicture;
+        }
         public IEnumerable<Config> GetAllConfigs()
         {
             try
@@ -860,6 +898,50 @@ namespace Repository.SqlServer
             catch (Exception)
             {
                 throw;
+            }
+        }
+        public async Task<bool> UploadFileS3Async(IFormFile file, string nameBucket, string name)
+        {
+
+            var awsKeyId = ConfigurationManager.AppSettings["AWSAccessKey"];
+            var awsSecretKey = ConfigurationManager.AppSettings["AWSSecretKey"];
+            var awsServiceUrl = ConfigurationManager.AppSettings["AWSServiceUrl"];
+            var awsRegionId = ConfigurationManager.AppSettings["AWSRegionId"];
+            try
+            {
+                var credentials = new BasicAWSCredentials(awsKeyId, awsSecretKey);
+                var config = new AmazonS3Config
+                {
+                    ServiceURL = awsServiceUrl,
+                    RegionEndpoint = Amazon.RegionEndpoint.GetBySystemName(awsRegionId)
+                };
+
+                using var s3Client = new AmazonS3Client(credentials, config);
+
+                var transferUtility = new TransferUtility(s3Client);
+                var transferRequest = new TransferUtilityUploadRequest
+                {
+                    InputStream = file.OpenReadStream(),
+                    AutoCloseStream = true,
+                    BucketName = nameBucket,
+                    Key = $"perfil/{name}",
+                    StorageClass = S3StorageClass.Standard
+                };
+
+                transferRequest.Metadata.Add("Date-UTC-Uploaded", DateTime.UtcNow.ToString());
+                await transferUtility.UploadAsync(transferRequest);
+
+                return true;
+            }
+            catch (AmazonS3Exception e)
+            {
+                Console.WriteLine("Error al subir archivo a Amazon S3: " + e.Message);
+                return false;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error inesperado: " + ex.Message);
+                return false;
             }
         }
     }

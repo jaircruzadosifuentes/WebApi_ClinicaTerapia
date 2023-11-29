@@ -291,5 +291,22 @@ namespace Repository.SqlServer
                 throw;
             }
         }
+
+        public bool PutUpdateProfile(string nameProfile, int id)
+        {
+            try
+            {
+                var command = CreateCommand("PA_UPDATE_PROFILE_EMPLOYEED_BY_ID_PUT");
+                command.CommandType = System.Data.CommandType.StoredProcedure;
+                command.Parameters.AddWithValue("@v_name", nameProfile);
+                command.Parameters.AddWithValue("@v_id", id);
+
+                return Convert.ToInt32(command.ExecuteNonQuery()) > 0;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
     }
 }

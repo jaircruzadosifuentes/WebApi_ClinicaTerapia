@@ -16,5 +16,6 @@ namespace Repository.Interfaces
         CajaChica VerifyCajaChica(DateTime dateOpened, int employeedCashId);
         CajaChica DetailDataEmployeedCajaChica(int employeedId, DateTime dateApertu);
        bool PostApertuCajaChica(CajaChica cajachica);
+       bool CloseCashRegisterById(CashRegisterDetail cashRegisterDetail);
     }
 }

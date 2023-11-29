@@ -32,6 +32,8 @@ namespace Entities
         public bool ScheduleGenerate { get; set; }
         public Pay? Pay { get; set; }
         public string? UserNamePatient { get; set; }
+        public bool? IsDoneQuiz { get; set; }
+        public bool? IsGenerateCredentials { get; set; }
         public Patient()
         {
             PatientProgresses = new List<PatientProgress>();

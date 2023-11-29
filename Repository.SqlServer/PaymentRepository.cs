@@ -16,6 +16,63 @@ namespace Repository.SqlServer
             _context = context;
             _transaction = transaction;
         }
+
+        public IEnumerable<Payment> GetDetailPayPendingGetByIdPayment(int paymentId)
+        {
+            try
+            {
+                var payments = new List<Payment>();
+                var command = CreateCommand("PA_DETAIL_PAY_PENDING_GET_BY_ID_PAYMENT");
+                command.Parameters.AddWithValue("@v_payment_id", paymentId);
+                command.CommandType = System.Data.CommandType.StoredProcedure;
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        payments.Add(new Payment
+                        {
+                            PaymentId = Convert.ToInt32(reader["payment_id"].ToString()),
+                            SesionDateMin = Convert.ToDateTime(reader["session_date_min"].ToString()),
+                            SesionDateMax = Convert.ToDateTime(reader["session_date_max"].ToString()),
+                            Employeed = new Employeed()
+                            {
+                                Person = new Person()
+                                {
+                                    Names = reader["name_employeed"].ToString(),
+                                    Surnames = reader["surname_employeed"].ToString(),
+                                },
+                            },
+                            UserPay = reader["user_pay"].ToString(),
+                            Patient = new Patient()
+                            {
+                                ClinicalHistory = new ClinicalHistory()
+                                {
+                                    PacketsOrUnitSessions = new PacketsOrUnitSessions()
+                                    {
+                                        Description = reader["packet"].ToString(),
+                                    },
+                                    Frecuency = new Frecuency()
+                                    {
+                                        FrecuencyDescription = reader["frecuency"].ToString(),    
+                                    }
+                                }
+                            },
+                            State = reader["state"].ToString(),
+                            StateValue = Convert.ToInt32(reader["state_value"].ToString()),
+                            StatePayValue = Convert.ToInt32(reader["state_pay_value"].ToString()),
+                            StatePay = reader["state_pay"].ToString(),
+                        });
+                    }
+                }
+
+                return payments;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
         public IEnumerable<Payment> GetPayments()
         {
             try
@@ -38,22 +95,19 @@ namespace Repository.SqlServer
                                     Surnames = reader["surnames"].ToString(),
                                     ProfilePicture = reader["profile_picture"].ToString()
                                 },
-                                ClinicalHistory = new ClinicalHistory()
-                                {
-                                    PacketsOrUnitSessions = new PacketsOrUnitSessions()
-                                    {
-                                        Description = reader["packet"].ToString()
-                                    }
-                                },
                                 UserNamePatient = reader["user_name"].ToString()
                             },
-                            Total = Convert.ToDecimal(reader["total"].ToString()),
-                            Igv = Convert.ToDecimal(reader["igv"].ToString()),
-                            SubTotal = Convert.ToDecimal(reader["sub_total"].ToString()),
-                            TotalCancelled = Convert.ToDecimal(reader["total_cancelled"].ToString()),
-                            TotalDebt = Convert.ToDecimal(reader["total_debt"].ToString()),
-                            DebtNumbertMax = Convert.ToInt32(reader["debt_number_max"].ToString()),
-                            State = reader["state"].ToString()
+                            State = reader["state"].ToString(),
+                            CuoPendingPayment = Convert.ToInt32(reader["cuo_pending_payment"].ToString()),
+                            NextPaymentDate = Convert.ToDateTime(reader["next_payment_date"].ToString()),
+                            LateDays = Convert.ToInt32(reader["late_days"].ToString()),
+                            StatePayId = Convert.ToInt32(reader["state_pay_id"].ToString()),
+                            DateOfIssue = Convert.ToDateTime(reader["date_of_issue"].ToString()),
+                            Campus = new Campus()
+                            {
+                                Name = reader["campus"].ToString()
+                            },
+                            StatePay = reader["state_pay"].ToString(),
                         });
                     }
                 }
@@ -89,7 +143,8 @@ namespace Repository.SqlServer
                             DebtNumber = Convert.ToInt32(reader["debt_number"].ToString()),
                             Amount = Convert.ToDecimal(reader["amount"].ToString()),
                             State = reader["state"].ToString(),
-                            PaymentDate = Convert.ToDateTime(reader["payment_date"].ToString())
+                            PaymentDate = Convert.ToDateTime(reader["payment_date"].ToString()),
+                            PaymentDateCanceled = Convert.ToDateTime(reader["payment_date_canceled"].ToString())
                         });
                     }
                 }

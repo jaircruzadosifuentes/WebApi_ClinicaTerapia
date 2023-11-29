@@ -23,6 +23,18 @@ namespace WebApi_ClinicaTerapia.Controllers
         {
             var result = _paymentService.GetPayments();
             return Ok(result);
+        } 
+        [HttpGet("GetDetailPayPendingGetByIdPayment/{paymentId}")]
+        public ActionResult<IEnumerable<Payment>> GetDetailPayPendingGetByIdPayment(int paymentId)
+        {
+            var result = _paymentService.GetDetailPayPendingGetByIdPayment(paymentId);
+            return Ok(result);
+        } 
+        [HttpGet("GetPaymentsScheduleDetail/{paymentId}")]
+        public ActionResult<IEnumerable<PaymentScheduleDetail>> GetPaymentsScheduleDetail(int paymentId)
+        {
+            var result = _paymentService.GetPaymentsScheduleDetail(paymentId);
+            return Ok(result);
         }
         [HttpPut("PutUpdateDebtPayment")]
         public void PutUpdateDebtPayment(PaymentScheduleDetail paymentScheduleDetail)
