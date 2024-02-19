@@ -11,7 +11,7 @@ namespace Entities
         public int ProductId { get; set; }
         public string? Name { get; set; }
         public string? Description { get; set; }
-        public Category? Category { get; set; }
+        public CategoryEntity? Category { get; set; }
         public SubCategory? SubCategory { get; set; }
         public decimal? Cantidad { get; set; }
         public decimal? Precio { get; set; }

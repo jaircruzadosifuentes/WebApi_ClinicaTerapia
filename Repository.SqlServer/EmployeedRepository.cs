@@ -62,6 +62,8 @@ namespace Repository.SqlServer
                             {
                                 Name = reader["campus_name"].ToString()
                             },
+                            BucketName = reader["bucket_name"].ToString(),
+                            FileName = reader["file_name"].ToString()
                         });
                     }
                 }
@@ -159,9 +161,16 @@ namespace Repository.SqlServer
                             AreaDescription = reader["area"].ToString(),
                         }
                     };
+                    ClinicalHistory clinicHistory = new()
+                    {
+                        NameFileHistoryClinic = reader["name_history_clinic"].ToString()
+                    };
+                    employeedEntity.ClinicalHistory = clinicHistory;
                     employeedEntity.Role = role;
                     employeedEntity.Person = person;
                     employeedEntity.State = reader["state"].ToString();
+                    employeedEntity.BucketName = reader["bucket_name"].ToString();
+                    employeedEntity.FileName = reader["file_name"].ToString();
                     employeedEntity.UserName = reader["user_name"].ToString();
                     employeedEntity.IsStaff = Convert.ToBoolean(reader["isStaff"].ToString());
                     employeedEntity.EmployeedId = Convert.ToInt32(reader["employeedId"].ToString());
@@ -234,6 +243,8 @@ namespace Repository.SqlServer
                     employeedEntity.StateAbbreviation = reader["abbreviation_state"].ToString();
                     employeedEntity.UserName = reader["user_name"].ToString();
                     employeedEntity.TypeUser = reader["typeUser"].ToString();
+                    employeedEntity.BucketName = reader["bucket_name"].ToString();
+                    employeedEntity.FileName = reader["file_name"].ToString();
                     employeedEntity.EmployeedCashRegisterId = Convert.ToInt32(reader["employeed_cash_register_id"].ToString());
 
                 }

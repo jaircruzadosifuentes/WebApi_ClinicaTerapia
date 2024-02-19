@@ -1,30 +1,85 @@
-﻿using Amazon.Runtime;
+﻿using Amazon.Lambda.APIGatewayEvents;
+using Amazon.Lambda.Core;
+using Amazon.Runtime;
 using Amazon.S3;
 using Amazon.S3.Model;
 using Amazon.S3.Transfer;
 using Entities;
+using iText.Html2pdf;
+using iText.Kernel.Pdf;
+using iText.Layout.Element;
+using iText.StyledXmlParser.Jsoup.Nodes;
+using iTextSharp.text;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Internal;
-using Newtonsoft.Json.Linq;
+using PdfSharp.Charting;
 using Repository.Interfaces;
-using System;
-using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
-using System.Linq;
-using System.Net;
+using System.Security.Cryptography;
 using System.Text;
-using System.Threading.Tasks;
+using Document = iTextSharp.text.Document;
+using Paragraph = iTextSharp.text.Paragraph;
+using iTextSharp.text.pdf;
+using Element = iTextSharp.text.Element;
+using PdfWriter = iTextSharp.text.pdf.PdfWriter;
+using Microsoft.AspNetCore.Http.Internal;
+using PdfReader = iTextSharp.text.pdf.PdfReader;
+using System.IO;
+using DocumentFormat.OpenXml.Packaging;
+using DocumentFormat.OpenXml.Wordprocessing;
+using Text = DocumentFormat.OpenXml.Wordprocessing.Text;
 
 namespace Repository.SqlServer
 {
+
     public class CommonRepository : Repository, ICommonRepository
     {
         public CommonRepository(SqlConnection context, SqlTransaction transaction)
         {
             _context = context;
             _transaction = transaction;
+        }
+        public Task<APIGatewayProxyResponse> ConvertHtmlToPdf(string bucketName, string fileName)
+        {
+            try
+            {
+                string htmlContent = "<!DOCTYPE html>\r\n<html>\r\n<head>\r\n\t<title>Reporte General</title>\r\n</head>\r\n<body>\r\n\t<h1>Título principal</h1>\r\n\t<p>Este es un párrafo de ejemplo en HTML5. Aquí podemos escribir información relevante para nuestro sitio web.</p>\r\n\t<blockquote>\r\n\t\t<p>“La creatividad es la inteligencia divirtiéndose.”</p>\r\n\t\t<footer>Albert Einstein</footer>\r\n\t</blockquote>\r\n\t<p>En este otro párrafo podemos seguir añadiendo información para nuestro sitio. También podemos utilizar las etiquetas de enfatizado, como <strong>negrita</strong>, <em>cursiva</em>, <u>subrayado</u>, <s>tachado</s>, y <mark>resaltado</mark>.</p>\r\n</body>\r\n</html>"; // Tu plantilla HTML
+
+                byte[] pdfBytes;
+
+                using (var memoryStream = new MemoryStream())
+                {
+                    ConverterProperties properties = new();
+                    HtmlConverter.ConvertToPdf(htmlContent, memoryStream, properties);
+
+                    pdfBytes = memoryStream.ToArray();
+                }
+                using (var client = new AmazonS3Client())
+                {
+                    client.PutObjectAsync(new PutObjectRequest
+                    {
+                        BucketName = bucketName,
+                        Key = fileName,
+                        InputStream = new MemoryStream(pdfBytes)
+                    }).Wait();
+                }
+                return Task.FromResult(new APIGatewayProxyResponse
+                {
+                    StatusCode = 200,
+                    Body = Convert.ToBase64String(pdfBytes),
+                    Headers = new Dictionary<string, string> { { "Content-Type", "application/pdf" } },
+                    IsBase64Encoded = true
+                });
+            }
+            catch (Exception ex)
+            {
+                return Task.FromResult(new APIGatewayProxyResponse
+                {
+                    StatusCode = 500,
+                    Body = $"Error al generar el PDF: {ex.Message}"
+                });
+            }
         }
         public string GetUrlImageFromS3(string profilePicture, string carpeta, string bucketName)
         {
@@ -168,18 +223,18 @@ namespace Repository.SqlServer
             }
         }
 
-        public IEnumerable<Category> GetCategoriesInSelect()
+        public IEnumerable<CategoryEntity> GetCategoriesInSelect()
         {
             try
             {
-                var categories = new List<Category>();
+                var categories = new List<CategoryEntity>();
                 var command = CreateCommand("PA_CATEGORY_IN_SELECT_GET_CATEGORY");
                 command.CommandType = CommandType.StoredProcedure;
                 using (var reader = command.ExecuteReader())
                 {
                     while (reader.Read())
                     {
-                        categories.Add(new Category
+                        categories.Add(new CategoryEntity
                         {
                             Value = Convert.ToInt32(reader["id"].ToString()),
                             Label = reader["name"].ToString(),
@@ -942,6 +997,155 @@ namespace Repository.SqlServer
             {
                 Console.WriteLine("Error inesperado: " + ex.Message);
                 return false;
+            }
+        }
+
+        public string EncryptFileNameYId(string originalFileName, int id)
+        {
+            string combinedString = originalFileName + id.ToString();
+            using SHA256 sha256 = SHA256.Create();
+            byte[] hashBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(combinedString));
+            StringBuilder stringBuilder = new();
+            for (int i = 0; i < hashBytes.Length; i++)
+            {
+                stringBuilder.Append(hashBytes[i].ToString("x2"));
+            }
+            return stringBuilder.ToString();
+        }
+        public static IFormFile ConvertirAMyIFormFile(MemoryStream memoryStream, string nombreArchivo)
+        {
+            memoryStream.Position = 0;
+            Stream stream = memoryStream as Stream;
+            IFormFile formFile = new FormFile(stream, 0, stream.Length, null, nombreArchivo);
+            return formFile;
+        }
+        public async Task<bool> GenerarClinicHistoryPDFAsync(ClinicalHistory clinicalHistory, string keyName)
+        {
+            try
+            {
+                string ruta = AppContext.BaseDirectory + "spooler\\" + "PLANTILLA_HISTORIA_CLINICA_V1.docx";
+                byte[] fileBytes = File.ReadAllBytes(ruta);
+                //Keywords and values
+                string? keyWordNamePatient = "{nombres}";
+                string? valueNamePatient = $"{clinicalHistory?.Patient?.Person?.Surnames}, {clinicalHistory?.Patient?.Person?.Names}";
+                string? keyWordSexo = "{sexo}";
+                string? valueSexoPatient = $"{clinicalHistory?.Patient?.Person?.Gender}";
+                string? keyWordDomicilio = "{domicilio}";
+                string? valueDomicilio = $"{clinicalHistory?.Patient?.Person?.Address}";
+                string? keyWordEdad = "{edad}";
+                string? valueEdad = $"{clinicalHistory?.Patient?.Person?.Age} años";
+                string? keyWordTelef = "{celu}";
+                string? valueTelef = $"{clinicalHistory?.Patient?.Person?.PersonCellphone?.CellPhoneNumber}";
+                string? keyWordECivil = "{ecivil}";
+                string? valueECivil = $"{clinicalHistory?.Patient?.Person?.CivilStatus}";
+                string? keyWordOcupacion = "{ocupacion}";
+                string? valueOcupacion = "-";
+                string? keyWordTerapeu = "{terapeuta}";
+                string? valueTerapeu = $"{clinicalHistory?.Terapeuta}";
+                string? keyWordFecha = "{fecha}";
+                string? valueFecha = $"{clinicalHistory?.CreatedAt}";
+                string? keyWordNroExpe = "{nroExpediente}";
+                string? valueNroExpe = $"{clinicalHistory?.NroClinicHistory}";
+                string? keyWordPeso = "{peso}";
+                string? valuePeso = $"{clinicalHistory?.Weight} Kg";
+                string? keyWordTalla = "{talla}";
+                string? valueTalla = $"{clinicalHistory?.HeightOfPerson} cm";
+                string? keyWordImc = "{imc}";
+                string? valueImc = $"{Convert.ToString(Math.Round((decimal)(clinicalHistory?.Imc), 2))}";
+
+                using MemoryStream memoryStream = new MemoryStream(fileBytes);
+                ReemplazarPalabrasClaveEnDocumento(memoryStream, keyWordNamePatient, valueNamePatient);
+                ReemplazarPalabrasClaveEnDocumento(memoryStream, keyWordSexo, valueSexoPatient);
+                ReemplazarPalabrasClaveEnDocumento(memoryStream, keyWordDomicilio, valueDomicilio);
+                ReemplazarPalabrasClaveEnDocumento(memoryStream, keyWordEdad, valueEdad);
+                ReemplazarPalabrasClaveEnDocumento(memoryStream, keyWordTelef, valueTelef);
+                ReemplazarPalabrasClaveEnDocumento(memoryStream, keyWordECivil, valueECivil);
+                ReemplazarPalabrasClaveEnDocumento(memoryStream, keyWordOcupacion, valueOcupacion);
+                ReemplazarPalabrasClaveEnDocumento(memoryStream, keyWordTerapeu, valueTerapeu);
+                ReemplazarPalabrasClaveEnDocumento(memoryStream, keyWordFecha, valueFecha);
+                ReemplazarPalabrasClaveEnDocumento(memoryStream, keyWordNroExpe, valueNroExpe);
+                ReemplazarPalabrasClaveEnDocumento(memoryStream, keyWordPeso, valuePeso);
+                ReemplazarPalabrasClaveEnDocumento(memoryStream, keyWordTalla, valueTalla);
+                ReemplazarPalabrasClaveEnDocumento(memoryStream, keyWordImc, valueImc);
+
+                memoryStream.Position = 0;
+                return await SubirArchivoAMemoriaAWS(memoryStream.ToArray(), clinicalHistory, keyName);
+            }
+            catch (AmazonS3Exception ex)
+            {
+                Console.WriteLine("Error de Amazon S3: " + ex.Message);
+                throw; 
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Otro error: " + ex.Message);
+                throw;
+            }
+        }
+        private void ReemplazarPalabrasClaveEnDocumento(MemoryStream memoryStream, string keywordToReplace, string replacementText)
+        {
+            using (WordprocessingDocument doc = WordprocessingDocument.Open(memoryStream, true))
+            {
+                Body body = doc.MainDocumentPart.Document.Body;
+
+                var textsToReplace = body!.Descendants<Text>()
+                    .Where(t => t.Text.Contains(keywordToReplace))
+                    .ToList();
+
+                foreach (var textToReplace in textsToReplace)
+                {
+                    textToReplace.Text = textToReplace.Text.Replace(keywordToReplace, replacementText);
+                }
+                //doc.Save();
+            }
+        }
+        private static Task<bool> SubirArchivoAMemoriaAWS(byte[] archivo, ClinicalHistory clinicalHistory, string keyName)
+        {
+            var awsKeyId = ConfigurationManager.AppSettings["AWSAccessKey"];
+            var awsSecretKey = ConfigurationManager.AppSettings["AWSSecretKey"];
+            var awsServiceUrl = ConfigurationManager.AppSettings["AWSServiceUrl"];
+            var awsRegionId = ConfigurationManager.AppSettings["AWSRegionId"];
+            string? bucketName = clinicalHistory?.BucketName; // Reemplazar con el nombre de tu bucket en AWS S3
+            var credentials = new BasicAWSCredentials(awsKeyId, awsSecretKey);
+            var config = new AmazonS3Config
+            {
+                ServiceURL = awsServiceUrl,
+                RegionEndpoint = Amazon.RegionEndpoint.GetBySystemName(awsRegionId)
+            };
+            IAmazonS3 s3Client = new AmazonS3Client(credentials, config); // Cambiar la región según corresponda
+            TransferUtility fileTransferUtility = new TransferUtility(s3Client);
+
+            using (MemoryStream stream = new MemoryStream(archivo))
+            {
+                fileTransferUtility.Upload(stream, bucketName, $"{clinicalHistory?.BucketFileName}/{keyName}");
+            }
+            return Task.FromResult(true);
+        }
+
+        public IEnumerable<Pathologies> GetPathologies()
+        {
+            try
+            {
+                var pathologies = new List<Pathologies>();
+                var command = CreateCommand("PA_PATHOLOGIES_GET_ALL");
+                command.CommandType = CommandType.StoredProcedure;
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        pathologies.Add(new Pathologies
+                        {
+                            PathologiesId = Convert.ToInt32(reader["id"].ToString()),
+                            Description = reader["description"].ToString(),
+                        });
+                    }
+                }
+
+                return pathologies;
+            }
+            catch (Exception)
+            {
+                throw;
             }
         }
     }

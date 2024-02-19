@@ -24,6 +24,12 @@ namespace WebApi_ClinicaTerapia.Controllers
             var payMethods = _commonService.GetAllPayMethods();
             return Ok(payMethods);
         }  
+        [HttpGet("GetPathologies")]
+        public ActionResult<IEnumerable<Pathologies>> GetPathologies()
+        {
+            var pathologies = _commonService.GetPathologies();
+            return Ok(pathologies);
+        }  
         [HttpGet("GetInComboTypeOfContract")]
         public ActionResult<IEnumerable<TypeOfContract>> GetInComboTypeOfContract()
         {
@@ -189,13 +195,13 @@ namespace WebApi_ClinicaTerapia.Controllers
             return Ok(configs);
         } 
         [HttpGet("GetCategoriesInSelect")]
-        public ActionResult<IEnumerable<Category>> GetCategoriesInSelect()
+        public ActionResult<IEnumerable<CategoryEntity>> GetCategoriesInSelect()
         {
             var configs = _commonService.GetCategoriesInSelect();
             return Ok(configs);
         } 
         [HttpGet("GetSubCategoriesInSelect/{categoryId}")]
-        public ActionResult<IEnumerable<Category>> GetSubCategoriesInSelect(int categoryId)
+        public ActionResult<IEnumerable<CategoryEntity>> GetSubCategoriesInSelect(int categoryId)
         {
             var configs = _commonService.GetSubCategoriesInSelect(categoryId);
             return Ok(configs);

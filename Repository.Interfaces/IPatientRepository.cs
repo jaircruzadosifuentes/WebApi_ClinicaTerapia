@@ -26,5 +26,7 @@ namespace Repository.Interfaces
         IEnumerable<Patient> GetAllPatientsInWaiting();
         IEnumerable<Patient> GetAllPatientsInAttention();
         PatientProgress GetItemSesionDetailById(int patientDetailSesionId);
+        IEnumerable<ClinicalHistory> GetHistoryForPatientId(int id, bool mostrarTodos);
+        bool PutUpdateHistorClinicDocument(int clinicHistoryId, string nameFile);
     }
 }

@@ -45,8 +45,9 @@ namespace Services
         bool PutConfig(Config config);
         IEnumerable<Routes> GetRoutesSpecial(string userCode);
         IEnumerable<SubCategory> GetSubCategoriesInSelect(int categoryId);
-        IEnumerable<Category> GetCategoriesInSelect();
+        IEnumerable<CategoryEntity> GetCategoriesInSelect();
         string GetUrlImageProfileEmployeed(string profilePicture);
+        IEnumerable<Pathologies> GetPathologies();
 
     }
     public class CommonService : ICommonService
@@ -82,7 +83,7 @@ namespace Services
             return context.Repositories.CommonRepository.GetAreasInSelect();
         }
 
-        public IEnumerable<Category> GetCategoriesInSelect()
+        public IEnumerable<CategoryEntity> GetCategoriesInSelect()
         {
             using var context = _unitOfWork.Create();
             return context.Repositories.CommonRepository.GetCategoriesInSelect();
@@ -334,6 +335,12 @@ namespace Services
         {
             using var context = _unitOfWork.Create();
             return context.Repositories.CommonRepository.VerifyPatientByFullName(surnames, names);
+        }
+
+        public IEnumerable<Pathologies> GetPathologies()
+        {
+            using var context = _unitOfWork.Create();
+            return context.Repositories.CommonRepository.GetPathologies();
         }
     }
 }

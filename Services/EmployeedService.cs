@@ -18,11 +18,11 @@ namespace Services
     {
         IEnumerable<Employeed> GetAllEmployeed();
         IEnumerable<EmployeedDisponibilty> GetSchedulesDisponibility(DateTime dateToConsult, int employeedId);
-        Employeed PostAccessSystem(Employeed employeed);
+        Employeed? PostAccessSystem(Employeed employeed);
         bool PostRegisterEmployeed(Employeed employeed);
         IEnumerable<Employeed> GetAllEmployeedPendingAproval();
         bool PutAppproveContractEmployeed(Employeed employeed);
-        Employeed GetByUserNameEmployeed(string userName);
+        Employeed? GetByUserNameEmployeed(string userName);
         Task<bool> UpdateProfilePicture(IFormFile fileData, int id);
     }
     public class EmployeedService : IEmployeedService
@@ -36,12 +36,17 @@ namespace Services
         public IEnumerable<Employeed> GetAllEmployeed()
         {
             using var context = _unitOfWork.Create();
-            var employeeds = context.Repositories.EmployeedRepository.GetAllEmployeed();
-            foreach (var item in employeeds)
+            var employees = context.Repositories.EmployeedRepository.GetAllEmployeed();
+
+            return employees.Select(employeed =>
             {
-                item.Person.ProfilePicture = context.Repositories.CommonRepository.GetUrlImageFromS3(profilePicture: item.Person.ProfilePicture ?? "", "perfil", "bucket-users-photos");
-            }
-            return employeeds;
+                employeed.Person!.ProfilePicture = context.Repositories.CommonRepository.GetUrlImageFromS3(
+                    profilePicture: employeed.Person.ProfilePicture ?? "",
+                    employeed.FileName ?? "",
+                    employeed.BucketName ?? ""
+                );
+                return employeed;
+            }).ToList();
         }
 
         public IEnumerable<Employeed> GetAllEmployeedPendingAproval()
@@ -50,33 +55,52 @@ namespace Services
             return context.Repositories.EmployeedRepository.GetAllEmployeedPendingAproval();
         }
 
-        public Employeed GetByUserNameEmployeed(string userName)
+        public Employeed? GetByUserNameEmployeed(string userName)
         {
-            using var context = _unitOfWork.Create();
-            var employeedReturn = context.Repositories.EmployeedRepository.GetByUserNameEmployeed(userName);
-            employeedReturn.Person.ProfilePicture = context.Repositories.CommonRepository.GetUrlImageFromS3(profilePicture: employeedReturn.Person.ProfilePicture ?? "", "perfil", "bucket-users-photos");
-            return employeedReturn;
-        }
+            try
+            {
+                using var context = _unitOfWork.Create();
+                var employeed = context.Repositories.EmployeedRepository.GetByUserNameEmployeed(userName);
 
+                if (employeed != null)
+                {
+                    employeed = GetUrlImageProfile(context, employeed);
+                }
+
+                return employeed;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+        private static Employeed? GetUrlImageProfile(IUnitOfWorkAdapter context, Employeed? employeed)
+        {
+            string profilePicture = employeed?.Person?.ProfilePicture ?? "";
+            string fileName = employeed?.FileName ?? "";
+            string bucketName = employeed?.BucketName ?? "";
+
+            if (employeed != null)
+            {
+                employeed.Person!.ProfilePicture = context.Repositories.CommonRepository.GetUrlImageFromS3(profilePicture, fileName, bucketName);
+            }
+            return employeed;
+        }
         public IEnumerable<EmployeedDisponibilty> GetSchedulesDisponibility(DateTime dateToConsult, int employeedId)
         {
             using var context = _unitOfWork.Create();
             return context.Repositories.EmployeedRepository.GetSchedulesDisponibility(dateToConsult, employeedId);
         }
-        public Employeed PostAccessSystem(Employeed employeed)
+        public Employeed? PostAccessSystem(Employeed employeed)
         {
             using var context = _unitOfWork.Create();
-            Employeed? employeedReturn = context.Repositories.EmployeedRepository.PostAccessSystem(employeed) ?? throw new InvalidOperationException("No se pudo crear el empleado");
-            if (employeedReturn.Person == null)
+            Employeed? createdEmployee = context.Repositories.EmployeedRepository.PostAccessSystem(employeed) ?? throw new InvalidOperationException("No se pudo crear el empleado");
+            if (createdEmployee != null)
             {
-                throw new InvalidOperationException("No hay información de la persona asociada al empleado");
+                createdEmployee = GetUrlImageProfile(context, createdEmployee);
+                return createdEmployee;
             }
-            else
-            {
-                employeedReturn.Person.ProfilePicture = context.Repositories.CommonRepository.GetUrlImageFromS3(profilePicture: employeedReturn.Person.ProfilePicture??"", "perfil", "bucket-users-photos");
-            }
-
-            return employeedReturn;
+            throw new InvalidOperationException("No hay información de la persona asociada al empleado");
         }
         public bool PostRegisterEmployeed(Employeed employeed)
         {
@@ -97,24 +121,28 @@ namespace Services
         public async Task<bool> UpdateProfilePicture(IFormFile fileData, int id)
         {
             using var context = _unitOfWork.Create();
-            string nameProfile = EncryptFileName(fileData.FileName, id) + Path.GetExtension(fileData.FileName);
-            bool update = await context.Repositories.CommonRepository.UploadFileS3Async(fileData, "bucket-users-photos", nameProfile);
-            //Actualizamos la imagen del trabajador
-            bool updateProfile = context.Repositories.EmployeedRepository.PutUpdateProfile(nameProfile, id);
-            context.SaveChanges();
-            return updateProfile;
-        }
-        public static string EncryptFileName(string originalFileName, int id)
-        {
-            string combinedString = originalFileName + id.ToString(); 
-            using SHA256 sha256 = SHA256.Create();
-            byte[] hashBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(combinedString));
-            StringBuilder stringBuilder = new StringBuilder();
-            for (int i = 0; i < hashBytes.Length; i++)
+
+            try
             {
-                stringBuilder.Append(hashBytes[i].ToString("x2"));
+                string nameProfile = context.Repositories.CommonRepository.EncryptFileNameYId(fileData.FileName, id) + Path.GetExtension(fileData.FileName);
+                bool update = await context.Repositories.CommonRepository.UploadFileS3Async(fileData, "bucket-users-photos", nameProfile);
+
+                if (update)
+                {
+                    bool updateProfile = context.Repositories.EmployeedRepository.PutUpdateProfile(nameProfile, id);
+                    if (updateProfile)
+                    {
+                        context.SaveChanges();
+                        return true;
+                    }
+                }
+                return false;
             }
-            return stringBuilder.ToString();
+            catch (Exception)
+            {
+                return false;
+            }
         }
+      
     }
 }

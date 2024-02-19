@@ -225,8 +225,8 @@ namespace Repository.SqlServer
                                 {
                                     Person = new Person()
                                     {
-                                        Names = reader["names"].ToString(),
-                                        Surnames = reader["surnames"].ToString()
+                                        Names = reader["names_employeed"].ToString(),
+                                        Surnames = reader["surnames_employeed"].ToString()
                                     }
                                 }
                             },
@@ -708,6 +708,80 @@ namespace Repository.SqlServer
                 }
 
                 return objPatient;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public IEnumerable<ClinicalHistory> GetHistoryForPatientId(int id, bool mostrarTodos)
+        {
+            try
+            {
+                var clinicalHistory = new List<ClinicalHistory>();
+                var command = CreateCommand("PA_GET_DETAIL_HISTORY_CLINIC_GET_BY_ID");
+                command.CommandType = System.Data.CommandType.StoredProcedure;
+                command.Parameters.AddWithValue("@v_patient_id", id);
+                command.Parameters.AddWithValue("@v_mostrar_todos", mostrarTodos);
+
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        clinicalHistory.Add(new ClinicalHistory
+                        {
+                            ClinicalHistoryId = Convert.ToInt32(reader["history_clinic_id"].ToString()),
+                            Patient = new Patient()
+                            {
+                                Person = new Person()
+                                {
+                                    Surnames = reader["surnames"].ToString(),
+                                    Names = reader["names"].ToString(),
+                                    Gender = reader["gender"].ToString(),
+                                    Age = Convert.ToInt32(reader["age"].ToString()),
+                                    Address = reader["address"].ToString(),
+                                    CivilStatus = reader["civil_status"].ToString(),
+                                    PersonCellphone = new CellPhone()
+                                    {
+                                        CellPhoneNumber = reader["number_cellphone"].ToString()
+                                    }
+                                },
+                            },
+                            BucketFileName = reader["file_name"].ToString(),
+                            BucketName = reader["bucket_name"].ToString(),
+                            State = reader["state"].ToString(),
+                            CreatedAt = Convert.ToDateTime(reader["created_at"].ToString()),
+                            NameFileHistoryClinic = reader["file_name_history_clinic"].ToString(),
+                            NameFileHistoryClinicTmp = reader["file_name_history_clinic"].ToString(),
+                            Terapeuta = reader["terapeuta"].ToString(),
+                            NroClinicHistory = reader["nro_clinic_history"].ToString(),
+                            Title = reader["title"].ToString(),
+                            Weight = Convert.ToDecimal(reader["weight"].ToString()),
+                            HeightOfPerson = Convert.ToDecimal(reader["height_of_person"].ToString()),
+                            Imc = Convert.ToDecimal(reader["imc"].ToString())
+                        });
+                    }
+                }
+
+                return clinicalHistory;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public bool PutUpdateHistorClinicDocument(int clinicHistoryId, string nameFile)
+        {
+            try
+            {
+                var command = CreateCommand("PA_UPD_HISTORY_CLINIC_FILE_DOC_PUT");
+                command.CommandType = System.Data.CommandType.StoredProcedure;
+                command.Parameters.AddWithValue("@v_clinic_history_id", clinicHistoryId);
+                command.Parameters.AddWithValue("@v_name_file", nameFile);
+
+                return Convert.ToInt32(command.ExecuteNonQuery()) > 0;
             }
             catch (Exception)
             {

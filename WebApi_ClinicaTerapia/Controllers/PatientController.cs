@@ -83,6 +83,12 @@ namespace WebApi_ClinicaTerapia.Controllers
         {
             var patients = _patientService.GetByIdPatientProgress(patientId);
             return Ok(patients);
+        } 
+        [HttpGet("GetHistoryForPatientId/{patientId}/{mostrarTodos}")]
+        public ActionResult<IEnumerable<ClinicalHistory>> GetHistoryForPatientId(int patientId, bool mostrarTodos)
+        {
+            var clinical = _patientService.GetHistoryForPatientId(patientId, mostrarTodos);
+            return Ok(clinical);
         }
         [HttpGet("GetItemSesionDetailById/{patientDetailSesionId}")]
         public ActionResult<PatientProgress> GetItemSesionDetailById(int patientDetailSesionId)

@@ -34,7 +34,7 @@ namespace Repository.SqlServer
                             ProductId = Convert.ToInt32(reader["id"].ToString()),
                             Name = reader["product"].ToString(),
                             Imagen = reader["imagen"].ToString(),
-                            Category = new Category()
+                            Category = new CategoryEntity()
                             {
                                 Label = reader["category"].ToString(),
                             },

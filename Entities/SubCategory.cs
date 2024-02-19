@@ -10,7 +10,7 @@ namespace Entities
     {
         public int Value { get; set; }
         public string? Label { get; set; }
-        public Category? Category { get; set; }
+        public CategoryEntity? Category { get; set; }
 
     }
 }

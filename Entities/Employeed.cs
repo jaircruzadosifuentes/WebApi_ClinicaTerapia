@@ -31,5 +31,8 @@ namespace Entities
         public Campus? Campus { get; set; }
         public int EmployeedCashRegisterId { get; set; }
         public int AreaId { get; set; }
+        public string? BucketName { get; set; }
+        public string? FileName { get; set; }
+        public ClinicalHistory? ClinicalHistory { get; set; }
     }
 }

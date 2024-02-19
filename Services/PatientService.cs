@@ -1,4 +1,5 @@
 ﻿using Entities;
+using Microsoft.VisualBasic;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,6 +27,7 @@ namespace Services
         IEnumerable<Patient> GetAllPatientsInWaiting();
         IEnumerable<Patient> GetAllPatientsInAttention();
         PatientProgress GetItemSesionDetailById(int patientDetailSesionId);
+        IEnumerable<ClinicalHistory> GetHistoryForPatientId(int id, bool mostrarTodos);
     }
     public class PatientService : IPatientService
     {
@@ -154,6 +156,34 @@ namespace Services
         {
             using var context = _unitOfWork.Create();
             return context.Repositories.PatientRepository.GetItemSesionDetailById(patientDetailSesionId);
+        }
+
+        public IEnumerable<ClinicalHistory> GetHistoryForPatientId(int id, bool mostrarTodos)
+        {
+            using var context = _unitOfWork.Create();
+            bool existeHistoryClinic = true;
+            var clinicalHistories = context.Repositories.PatientRepository.GetHistoryForPatientId(id, mostrarTodos);
+            foreach (var history in clinicalHistories)
+            {
+                string keyName = $"Historia_clinica_{history?.Patient?.Person?.Surnames}_{history?.Patient?.Person?.Names}_{history?.ClinicalHistoryId}.docx"; // Nombre que deseas darle al archivo en S3
+                if (string.IsNullOrEmpty(history?.NameFileHistoryClinic))
+                {
+                    existeHistoryClinic = true;
+                }
+                if (!existeHistoryClinic)
+                {
+                    context.Repositories.CommonRepository.GenerarClinicHistoryPDFAsync(history, keyName);
+                    context.Repositories.PatientRepository.PutUpdateHistorClinicDocument(history.ClinicalHistoryId, keyName);
+                    history!.NameFileHistoryClinic = keyName;
+                }
+                history!.NameFileHistoryClinicTmp = keyName;
+                history!.NameFileHistoryClinic = context.Repositories.CommonRepository.GetUrlImageFromS3(history.NameFileHistoryClinic??"", history.BucketFileName??"", history.BucketName??"");
+            }
+            if(!existeHistoryClinic)
+            {
+                context.SaveChanges();
+            }
+            return clinicalHistories;
         }
     }
 }
